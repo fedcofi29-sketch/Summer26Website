@@ -1,0 +1,27 @@
+.book-list {
+ list-style: none;
+ max-width: 500px;
+ margin: 0 auto;
+ margin-top: 20px
+}
+
+
+.book-item {
+ display: flex;
+ margin-bottom: 8px;
+ color: #e836df;
+ justify-content: space-between;
+ align-items: center;
+}
+
+
+.del-button {
+ margin-left: 16px;
+ cursor: pointer
+}
+
+
+.add-button {
+ margin-left: 10px;
+ cursor: pointer
+}
