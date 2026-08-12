@@ -1,41 +1,60 @@
+// I don't really understand what's going on here
 const express = require('express')
+const mongoose = require('mongoose')
 const app = express()
 const PORT = 5050
 
-app.use(express.json())
+mongoose.connect('mongodb://127.0.0.1.27017/bookList')
+.then(() => console.log('Connected to MongoDB'))
+.catch((err) => console.log('Server not connecting:', err))
 
-let dummyData = [
-  {
-  "title": 'The Hunger Games',
-  "author": 'Suzanne Collins',
-  "id": 1
-},
-{
-  "title": "Ender's Game",
-  "author": 'Orson Scott Card',
-  "id": 2
-},
-{
-  "title": 'Foundation',
-  "author": 'Isaac Asimov',
-  "id": 3
-}
-]
-
-app.get('/api/items', (req, res) => {
-  res.status(200).json(dummyData)
+const bookSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true
+  },
+  author: {
+    type: String,
+    required: true
+  },
+  id: {
+    type: String,
+    required: true
+  },
 })
 
-app.post('/api/items', (req, res) => {
-  const newItem = {
-    "title": req.body.title || 'Untitled Book',
-    "author": req.body.author || 'Author Unknown',
-    "id": dummyData.length + 1
+app.use(express.json())
+
+const Book = mongoose.model('Book', bookSchema)
+
+app.get('/api/books', async (req, res) => {
+  try {
+    const books = await Book.find()
+    res.status(200).json(books)
+  } catch (error) {
+    res.status(500).json('Failed to get books')
   }
+})
 
-  dummyData.push(newItem)
+function GenerateKey( title, author ){
+  let titleChar = title.slice(0,3)
+  let authorChar = author.slice(0,3)
+  console.log(`${titleChar}${authorChar}`)
+  return `${titleChar}${authorChar}`
+}
 
-  res.status(201).json(newItem)
+app.post('/api/books', async (req, res) => {
+  try {
+    const newBook = Book({
+    "title": req.body.title,
+    "author": req.body.author,
+    "id": GenerateKey(newBook.title, newBook.author)
+  }) 
+    const savedBook = await newBook.save()
+    res.status(201).json(savedBook)
+  } catch (error) {
+    res.status(400).json('Failed to create book')
+  }
 })
 
 app.listen(PORT, () => {
