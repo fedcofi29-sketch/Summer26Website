@@ -1,7 +1,7 @@
 import './App.css'
 import {useState} from 'react'
 
-const InitialBooks = [
+const InitialBooks = [ // Initial data
 {
   "title": 'The Hunger Games',
   "author": 'Suzanne Collins',
@@ -20,7 +20,7 @@ const InitialBooks = [
 ]
 
 
-function InputSetup( {text, variable, variableAlter} ) {
+function InputSetup( {text, variable, variableAlter} ) { // Textbox input
   return (
     <input
     value={variable}
@@ -29,7 +29,7 @@ function InputSetup( {text, variable, variableAlter} ) {
     />
 )}
 
-function GenerateKey( title, author ){
+function GenerateKey( title, author ){ // Creates unique id for each book
   let titleChar = title.slice(0,3)
   let authorChar = author.slice(0,3)
   console.log(`${titleChar}${authorChar}`)
@@ -43,14 +43,14 @@ function App() {
   const [inputAuthorValue, setInputAuthorValue] = useState('')
 
   function OnAddClick( title, author ) {
-  if (title === '' || author === '') return
+  if (title === '' || author === '') return // Only works if author and title both have stuff written
     const newBook = {
       "title": title,
       "author": author,
       "id": GenerateKey(title, author)
     }
-  setBooks([...books, newBook])
-  setInputTitleValue('')
+  setBooks([...books, newBook]) // Appends the new book to the list
+  setInputTitleValue('') // Wipes input boxes 
   setInputAuthorValue('')
   }
 
@@ -65,7 +65,7 @@ function App() {
             </button>
         </div>
       <ul className='book-list'>
-        {books.map(book => (
+        {books.map(book => ( // Runs this for each book in the list
           <li key={book.id} className='book-item'>
             {book.title} by {book.author}
             <button className='del-button' onClick={() => setBooks(books.filter(b => b.id !== book.id))}>

@@ -1,15 +1,14 @@
-const express = require('express') // Server runs on
-const mongoose = require('mongoose') // This is where the data gets sent
-const cors = require('cors') // Allows data to be shared
+// I don't really understand what's going on here
+const express = require('express')
+const mongoose = require('mongoose')
 const app = express()
-app.use(cors())
 const PORT = 5050
 
-mongoose.connect('mongodb://127.0.0.1:27017/bookList') // My database
+mongoose.connect('mongodb://127.0.0.1:27017/bookList')
 .then(() => console.log('Connected to MongoDB'))
 .catch((err) => console.log('Server not connecting:', err))
 
-const bookSchema = new mongoose.Schema({ // All data has to fit this format
+const bookSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true
@@ -26,7 +25,7 @@ const Book = mongoose.model('Book', bookSchema)
 
 app.get('/api/items', async (req, res) => {
   try {
-    const books = await Book.find() // Looks for data being passed through that matches the schema
+    const books = await Book.find()
     res.status(200).json(books)
   } catch (error) {
     console.error('database error:', error)
@@ -36,7 +35,7 @@ app.get('/api/items', async (req, res) => {
 
 app.post('/api/items', async (req, res) => {
   try {
-    const newBook = new Book({ // Format that processes data
+    const newBook = new Book({
     "title": req.body.title,
     "author": req.body.author,
   }) 
