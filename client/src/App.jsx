@@ -20,7 +20,7 @@ function App() {
 
   async function fetchBooks() {
     try {
-        const response = await fetch('http://localhost:5050/api/items') // Sends request to server for data
+        const response = await fetch('http://localhost:5050/api/bookList') // Sends request to server for data
         const data = await response.json() // Converts data into js
         setBooks(data)
       } catch (error) {
@@ -36,7 +36,7 @@ function App() {
   async function OnAddClick( title, author ) {
     if (title === '' || author === '') return // Only works if author and title both have stuff written
       try {
-        const response = await fetch('http://localhost:5050/api/items', { // Sends to server
+        const response = await fetch('http://localhost:5050/api/bookList', { // Sends to server
           method: 'POST', // Runs app.post in index.js w/ this data
           headers: {
             'Content-Type': 'application/json' // Tells it what type of data to receive
@@ -55,7 +55,7 @@ function App() {
 
   async function OnDeleteClick(id) {
     try {
-    const response = await fetch(`http://localhost:5050/api/items/${id}`, {
+    const response = await fetch(`http://localhost:5050/api/bookList/${id}`, {
       method: 'DELETE' // runs app.delete in index.js w/ this data
     })
     if (response.ok) {

@@ -24,7 +24,7 @@ app.use(express.json())
 
 const Book = mongoose.model('Book', bookSchema)
 
-app.get('/api/items', async (req, res) => {
+app.get('/api/bookList', async (req, res) => {
   try {
     const books = await Book.find() // Looks for data being passed through that matches the schema
     res.status(200).json(books)
@@ -34,7 +34,7 @@ app.get('/api/items', async (req, res) => {
   }
 })
 
-app.post('/api/items', async (req, res) => {
+app.post('/api/bookList', async (req, res) => {
   try {
     const newBook = new Book({ // Format that processes data
     "title": req.body.title,
@@ -47,7 +47,7 @@ app.post('/api/items', async (req, res) => {
   }
 })
 
-app.delete('/api/items/:id', async (req, res) => {
+app.delete('/api/bookList/:id', async (req, res) => {
   try {
     const {id} = req.params
 
