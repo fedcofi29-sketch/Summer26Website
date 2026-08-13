@@ -47,6 +47,22 @@ app.post('/api/items', async (req, res) => {
   }
 })
 
+app.delete('/api/items/:id', async (req, res) => {
+  try {
+    const {id} = req.params
+
+    const deletedBook = await Book.findByIdAndDelete(id) // Only created if a book is deleted
+    if (!deletedBook) { // Sends error message if failed
+      return res.status(404).json({message: 'Book not found'})
+    } 
+    
+    res.status(200).json({message: 'Book deleted'})
+  } catch (error) {
+    console.error('Error deleting book from database:', error) // Catches other errors
+    res.status(500).json({message: 'Failure to delete book'})
+  }
+})
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`)
 })

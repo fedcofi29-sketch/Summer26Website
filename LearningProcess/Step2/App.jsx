@@ -58,10 +58,9 @@ function App() {
     <div style={{ textAlign: 'center', marginTop: '50px' }}>
       <h1>Favorite Book List</h1>
         <div className='input-div'>
-          <InputSetup text='title' variable={inputTitleValue} variableAlter={setInputTitleValue}/> // Sets up with function now
+          <InputSetup text='title' variable={inputTitleValue} variableAlter={setInputTitleValue}/> 
           <InputSetup text='author' variable={inputAuthorValue} variableAlter={setInputAuthorValue}/>
-          <button className='add-button' onClick={() => OnAddClick(inputTitleValue, inputAuthorValue)}> // Calls function to add book
-            Add
+          <button className='add-button' onClick={() => OnAddClick(inputTitleValue, inputAuthorValue)}>
             </button>
         </div>
       <ul className='book-list'>
