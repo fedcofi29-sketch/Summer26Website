@@ -26,11 +26,11 @@ function App() {
      <h1>Favorite Book List</h1>
        <div>
          <input type = 'text' placeholder='Enter title here...' style ={{margin: '10px'}}/>
-         <input type = 'text' placeholder='Enter author here...'/>
+         <input type = 'text' placeholder='Enter author here...'/> // Input boxes for title and author
          <button className='add-button'>Add</button>
        </div>
      <ul className='book-list'>
-       {MyBooks.map(book => (
+       {MyBooks.map(book => ( // Runs this for each book in the list
          <li key={book.id} className='book-item'>
            {book.title} by {book.author}
            <button className='del-button'>Delete</button>

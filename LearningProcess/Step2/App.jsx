@@ -20,7 +20,7 @@ const InitialBooks = [
 ]
 
 
-function InputSetup( {text, variable, variableAlter} ) {
+function InputSetup( {text, variable, variableAlter} ) { // Textbox input
   return (
     <input
     value={variable}
@@ -29,7 +29,7 @@ function InputSetup( {text, variable, variableAlter} ) {
     />
 )}
 
-function GenerateKey( title, author ){
+function GenerateKey( title, author ){ // Creates unique id for each book
   let titleChar = title.slice(0,3)
   let authorChar = author.slice(0,3)
   console.log(`${titleChar}${authorChar}`)
@@ -38,12 +38,12 @@ function GenerateKey( title, author ){
 
 
 function App() {
-  const [books, setBooks] = useState(InitialBooks)
+  const [books, setBooks] = useState(InitialBooks) // Stores data in state so react updates
   const [inputTitleValue, setInputTitleValue] = useState('')
   const [inputAuthorValue, setInputAuthorValue] = useState('')
 
   function OnAddClick( title, author ) {
-  if (title === '' || author === '') return
+  if (title === '' || author === '') return // Only works if author and title both have stuff written
     const newBook = {
       "title": title,
       "author": author,
@@ -58,14 +58,14 @@ function App() {
     <div style={{ textAlign: 'center', marginTop: '50px' }}>
       <h1>Favorite Book List</h1>
         <div className='input-div'>
-          <InputSetup text='title' variable={inputTitleValue} variableAlter={setInputTitleValue}/>
+          <InputSetup text='title' variable={inputTitleValue} variableAlter={setInputTitleValue}/> // Sets up with function now
           <InputSetup text='author' variable={inputAuthorValue} variableAlter={setInputAuthorValue}/>
-          <button className='add-button' onClick={() => OnAddClick(inputTitleValue, inputAuthorValue)}>
+          <button className='add-button' onClick={() => OnAddClick(inputTitleValue, inputAuthorValue)}> // Calls function to add book
             Add
             </button>
         </div>
       <ul className='book-list'>
-        {books.map(book => (
+        {books.map(book => ( // Runs this for each book in the list
           <li key={book.id} className='book-item'>
             {book.title} by {book.author}
             <button className='del-button' onClick={() => setBooks(books.filter(b => b.id !== book.id))}>

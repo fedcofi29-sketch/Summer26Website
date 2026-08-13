@@ -38,7 +38,7 @@ function GenerateKey( title, author ){ // Creates unique id for each book
 
 
 function App() {
-  const [books, setBooks] = useState(InitialBooks)
+  const [books, setBooks] = useState(InitialBooks) // Stores data in state so react updates
   const [inputTitleValue, setInputTitleValue] = useState('')
   const [inputAuthorValue, setInputAuthorValue] = useState('')
 
@@ -60,7 +60,7 @@ function App() {
         <div className='input-div'>
           <InputSetup text='title' variable={inputTitleValue} variableAlter={setInputTitleValue}/>
           <InputSetup text='author' variable={inputAuthorValue} variableAlter={setInputAuthorValue}/>
-          <button className='add-button' onClick={() => OnAddClick(inputTitleValue, inputAuthorValue)}>
+          <button className='add-button' onClick={() => OnAddClick(inputTitleValue, inputAuthorValue)}> // Calls function to add book
             Add
             </button>
         </div>
