@@ -1,9 +1,40 @@
-.book-list {
-  list-style: none;
-  max-width: 500px;
-  margin: 0 auto;
-  margin-top: 20px
+body {
+  background-color:#ac98e3
 }
+
+.vertical-lines {
+  border-collapse: collapse; /* stops overlapping lines */
+  background-color: #60a4b2; /* temporary so I can see where the table is */
+  margin: 0 auto; /* centers overall table on screen */
+  align-items: center /* centers each item within its space */
+}
+.vertical-lines td {
+  border-right: 2px solid #060606;
+  padding: 8px 12px;
+  border-top: none;
+  border-bottom: none
+}
+
+.vertical-lines td:last-child { /* removes the line on the last item so there is no table border */
+  border-right: none
+}
+
+.utility-button {
+  cursor: pointer;
+  width: 20px;
+  height: 20px
+}
+
+.del-button {
+  cursor: pointer;
+  height: 20px;
+}
+
+.hw-heading { /* color picker is easier in css. probably could just be in jsx though */
+  color:#170e30
+}
+
+/*
 
 .book-item {
   display: flex;
@@ -27,4 +58,4 @@
   display: flex;
   gap: 10px;
   justify-content: center;
-}
+} */

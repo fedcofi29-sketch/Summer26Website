@@ -1,90 +1,56 @@
-import './App.css'
-import {useState} from 'react'
-import {useEffect} from 'react'
+import  './App.css'
 
+const myWork = [
+  {
+    'subject': 'English',
+    'task': 'Essay',
+    'due': [8, 24],
+    'id': 1
+  },
+  {
+    'subject': 'Math',
+    'task': 'Worksheet',
+    'due': [8, 20],
+    'id': 2
+  },
+  {
+    'subject': 'History',
+    'task': 'Annotations',
+    'due': [9, 1],
+    'id': 3
+  }
+]
 
-function InputSetup( {text, variable, variableAlter} ) { // Textbox input
-  return (
-    <input
-    value={variable}
-    placeholder={`Enter ${text} here...`}
-    onChange={(e) => variableAlter(e.target.value)}
-    />
-)}
+const Months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
+function convertToDate(month, day) { // I'm planning on passing the month value as a number in the actual app
+  const monthName = Months[month-1] // Account for index starting at 0
+  return `${monthName} ${day}`
+}
 
 function App() {
-  const [books, setBooks] = useState([]) // Stores data in state so react updates
-  const [inputTitleValue, setInputTitleValue] = useState('')
-  const [inputAuthorValue, setInputAuthorValue] = useState('')
-
-  async function fetchBooks() {
-    try {
-        const response = await fetch('http://localhost:5050/api/bookList') // Sends request to server for data
-        const data = await response.json() // Converts data into js
-        setBooks(data)
-      } catch (error) {
-        console.error('Error fetching data from server:', error)
-      }
-    }
-  
-
-  useEffect(() => { // Triggers when the app is opened
-    fetchBooks()
-  }, []) // [] prevents it from running everytime the page rerenders
-
-  async function OnAddClick( title, author ) {
-    if (title === '' || author === '') return // Only works if author and title both have stuff written
-      try {
-        const response = await fetch('http://localhost:5050/api/bookList', { // Sends to server
-          method: 'POST', // Runs app.post in index.js w/ this data
-          headers: {
-            'Content-Type': 'application/json' // Tells it what type of data to receive
-          },
-          body: JSON.stringify({title, author}) // Formats data to send
-        })
-        
-        const data = await response.json()
-        setInputTitleValue('')
-        setInputAuthorValue('')
-        fetchBooks()
-      } catch (error) {
-        console.error('Error sending data:', error)
-      }
-  }
-
-  async function OnDeleteClick(id) {
-    try {
-    const response = await fetch(`http://localhost:5050/api/bookList/${id}`, {
-      method: 'DELETE' // runs app.delete in index.js w/ this data
-    })
-    if (response.ok) {
-      setBooks(books.filter(book => book._id !== id))
-    }} catch (error) {
-      console.error('Error deleting book:', error)
-    }
-  }
-
   return (
-    <div style={{ textAlign: 'center', marginTop: '50px' }}>
-      <h1>Favorite Book List</h1>
-        <div className='input-div'>
-          <InputSetup text='title' variable={inputTitleValue} variableAlter={setInputTitleValue}/>
-          <InputSetup text='author' variable={inputAuthorValue} variableAlter={setInputAuthorValue}/>
-          <button className='add-button' onClick={() => OnAddClick(inputTitleValue, inputAuthorValue)}>
-            Add
-            </button>
-        </div>
-      <ul className='book-list'>
-        {books.map(book => ( // Runs this for each book in the list
-          <li key={book._id} className='book-item'>
-            {book.title} by {book.author}
-            <button className='del-button' onClick={() => OnDeleteClick(book._id)}>
-              Delete</button>
-          </li>
-        ))}
-      </ul>
+    <div>
+      <h1 className='hw-heading'>Homework</h1>
+        <table className='vertical-lines'> {/* I think it just looks nicer to only have divisions this way */}
+        <thead> {/* Not really sure what thead does but it gives me an error message if I don't have it */}
+          {myWork.map(work => (
+            <tr key={work.id} >
+              <td>{work.task}</td>
+              <td>{convertToDate(work.due[0], work.due[1])}</td>
+              <td><button className='utility-button'></button></td>
+              {/* Not exactly sure what I'm going to use this button for exactly.
+                My intial idea was to have a checkmark to remember which assignments I've finished but haven't submitted yet.
+                Not sure if that's really necessary. Also could be to mark assignments I need to ask for help on
+                or need long-term progress. Maybe it lights up if I've had something added for more than a certain
+                period of time if I figure out how to track that. */}
+              <td><button className='del-button'>Submitted</button></td>
+            </tr>
+          ))}
+        </thead>
+        </table>
     </div>
+
   )
 }
 
