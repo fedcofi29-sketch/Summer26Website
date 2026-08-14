@@ -19,6 +19,12 @@ body {
   border-right: none
 }
 
+.input-div {
+  margin-top: 0;
+  margin-bottom: 8px;
+
+}
+
 .utility-button {
   cursor: pointer;
   width: 20px;

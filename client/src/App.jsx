@@ -23,15 +23,22 @@ const myWork = [
 
 const Months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-function convertToDate(month, day) { // I'm planning on passing the month value as a number in the actual app
+function convertToDate(month, day) { // Just learned there is a literal date input, so this might not be needed
   const monthName = Months[month-1] // Account for index starting at 0
   return `${monthName} ${day}`
 }
 
+/* I looked through the inputs and found way more than I expected. Remember to check those in the future.
+    Checkbox, submit, date/time could all be useful going forward */
 function App() {
   return (
     <div>
       <h1 className='hw-heading'>Homework</h1>
+        <div className='input-div'>
+          <input type = 'string' placeholder = 'Subject'></input>
+          <input type = 'string' placeholder = 'Assignment'></input>
+          <input type = 'date'></input>
+        </div>
         <table className='vertical-lines'> {/* I think it just looks nicer to only have divisions this way */}
         <thead> {/* Not really sure what thead does but it gives me an error message if I don't have it */}
           {myWork.map(work => (
