@@ -1,5 +1,5 @@
 body {
-  background-color:#ac98e3
+  background-color:#ac98e3 /* Chose this color randomly to see if it would work... probably should change */
 }
 
 .hw-heading { /* color picker is easier in css. probably could just be in jsx though */
@@ -40,6 +40,7 @@ body {
   gap: 8px;
   margin: 8px auto;
   justify-content: center;
+  flex: 1 /* pushes footer to the bottom */
 }
 
 .input-dimen {

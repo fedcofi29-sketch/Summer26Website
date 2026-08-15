@@ -23,16 +23,17 @@ const myWork = [
 ]
 
 const Months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-const subjectColors = {
-  "SEL": 'lightpurple',
-  "Math": 'lightred',
-  'Spanish': 'pink',
-  'Biology': 'green',
-  'Mech Eng': 'orange',
-  'History': 'lightyellow',
-  'Modern': 'blue',
-  'English': 'lightgray'
+const subjectColors = { // Kind of arbitrary, but this is how I set my tabgroups
+  "SEL": '#921892',
+  "Math": '#d32f2fa3',
+  'Spanish': '#b3277b',
+  'Biology': '#206b1e',
+  'Mech Eng': '#d17224',
+  'History': '#c7cc2f',
+  'Modern': '#3f62d4',
+  'English': '#a4a8c0'
 }
+const subjects = ["SEL", "Math", "Spanish", "Biology", "Mech Eng", "History", "Modern", "English"]
 
 function convertToDate(month, day) { // Just learned there is a literal date input, so this might not be needed
   const monthName = Months[month-1] // Account for index starting at 0
@@ -40,13 +41,20 @@ function convertToDate(month, day) { // Just learned there is a literal date inp
 }
 
 /* I looked through the inputs and found way more than I expected. Remember to check those in the future.
-    Checkbox, submit, date/time could all be useful going forward */
+    Checkbox, submit, date/time could all be useful going forward. 
+      After writing this I then also found dropdowns which are really useful. */
 function App() {
   return (
-    <div>
+    <div style={{minHeight: '100vh'}}> {/* pushes footer to the bottom */}
       <h1 className='hw-heading'>Homework</h1>
         <div className='input-div'>
-          <input type = 'string' placeholder = 'Subject' className='input-dimen'></input>
+          <select defaultValue="Subject"> 
+            {/* this can be set to have a color based on the selected subjects once states are added to track the value */}
+            <option value="Subject" disabled>Subject</option>
+            {subjects.map(subject => (
+              <option value={subject}>{subject}</option>
+            ))}
+          </select>
           <input type = 'string' placeholder = 'Assignment' className='input-dimen'></input>
           <input type = 'date' className='input-dimen'></input>
           <button className='add-new-task'>
@@ -56,7 +64,7 @@ function App() {
         <table className='vertical-lines'> {/* I think it just looks nicer to only have divisions this way */}
         <thead> {/* Not really sure what thead does but it gives me an error message if I don't have it */}
           {myWork.map(work => (
-            <tr key={work.id} style={{backgroundColor:subjectColors[work.subject]}} >
+            <tr key={work.id} style={{backgroundColor:subjectColors[work.subject], color: 'black'}} >
               <td>{work.task}</td>
               <td>{convertToDate(work.due[0], work.due[1])}</td>
               <td><button className='utility-button'></button></td>
@@ -71,7 +79,6 @@ function App() {
         </thead>
         </table>
     </div>
-
   )
 }
 
