@@ -2,9 +2,24 @@ body {
   background-color:#ac98e3
 }
 
+.hw-heading { /* color picker is easier in css. probably could just be in jsx though */
+  color:#170e30
+}
+
+.add-new-task {
+  display: inline-flex; /* sets the size equal to the image */
+}
+
+.add-new-task img {
+  display: block;
+  width: 20px;
+  height: auto;
+  background-color: solid #f7f5f5
+}
+
 .vertical-lines {
   border-collapse: collapse; /* stops overlapping lines */
-  background-color: #60a4b2; /* temporary so I can see where the table is */
+  /* background-color: #60a4b2; temporary so I can see where the table is */
   margin: 0 auto; /* centers overall table on screen */
   align-items: center /* centers each item within its space */
 }
@@ -20,9 +35,16 @@ body {
 }
 
 .input-div {
-  margin-top: 0;
-  margin-bottom: 8px;
+  /* align-items: center; */
+  display: flex;
+  gap: 8px;
+  margin: 8px auto;
+  justify-content: center;
+}
 
+.input-dimen {
+  width: 110px;
+  padding: 5px;
 }
 
 .utility-button {
@@ -34,11 +56,12 @@ body {
 .del-button {
   cursor: pointer;
   height: 20px;
+  background-color:#611b1b;
+  border-color:#611b1b;
+  color:#ae3030;
 }
 
-.hw-heading { /* color picker is easier in css. probably could just be in jsx though */
-  color:#170e30
-}
+
 
 /*
 

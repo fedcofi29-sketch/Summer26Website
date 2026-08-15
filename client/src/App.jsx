@@ -1,4 +1,5 @@
 import  './App.css'
+import downArrow from './assets/DownArrow.png'
 
 const myWork = [
   {
@@ -22,6 +23,16 @@ const myWork = [
 ]
 
 const Months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const subjectColors = {
+  "SEL": 'lightpurple',
+  "Math": 'lightred',
+  'Spanish': 'pink',
+  'Biology': 'green',
+  'Mech Eng': 'orange',
+  'History': 'lightyellow',
+  'Modern': 'blue',
+  'English': 'lightgray'
+}
 
 function convertToDate(month, day) { // Just learned there is a literal date input, so this might not be needed
   const monthName = Months[month-1] // Account for index starting at 0
@@ -35,14 +46,17 @@ function App() {
     <div>
       <h1 className='hw-heading'>Homework</h1>
         <div className='input-div'>
-          <input type = 'string' placeholder = 'Subject'></input>
-          <input type = 'string' placeholder = 'Assignment'></input>
-          <input type = 'date'></input>
+          <input type = 'string' placeholder = 'Subject' className='input-dimen'></input>
+          <input type = 'string' placeholder = 'Assignment' className='input-dimen'></input>
+          <input type = 'date' className='input-dimen'></input>
+          <button className='add-new-task'>
+            <img src={downArrow} alt="Add new task"></img>
+            </button>
         </div>
         <table className='vertical-lines'> {/* I think it just looks nicer to only have divisions this way */}
         <thead> {/* Not really sure what thead does but it gives me an error message if I don't have it */}
           {myWork.map(work => (
-            <tr key={work.id} >
+            <tr key={work.id} style={{backgroundColor:subjectColors[work.subject]}} >
               <td>{work.task}</td>
               <td>{convertToDate(work.due[0], work.due[1])}</td>
               <td><button className='utility-button'></button></td>
