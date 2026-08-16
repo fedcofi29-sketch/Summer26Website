@@ -45,7 +45,8 @@ function convertToDate(month, day) { // Just learned there is a literal date inp
       After writing this I then also found dropdowns which are really useful. */
 function App() {
   return (
-    <div style={{minHeight: '100vh'}}> {/* pushes footer to the bottom */}
+    <div className="overall-page"> {/* encompasses everything to account for footer */}
+      <div style={{flex: '1'}}> {/* this div is everything but the footer */}
       <h1 className='hw-heading'>Homework</h1>
         <div className='input-div'>
           <select defaultValue="Subject"> 
@@ -78,6 +79,8 @@ function App() {
           ))}
         </thead>
         </table>
+        </div>
+        <footer>Total</footer>
     </div>
   )
 }

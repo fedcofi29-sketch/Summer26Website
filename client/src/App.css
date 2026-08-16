@@ -2,9 +2,8 @@ body {
   background-color:#ac98e3 /* Chose this color randomly to see if it would work... probably should change */
 }
 
-.hw-heading { /* color picker is easier in css. probably could just be in jsx though */
-  color:#170e30
-}
+/* All the className css is organized alphabetically
+    I tried doing it similar to how it appears in the jsx, but that didn't really work */
 
 .add-new-task {
   display: inline-flex; /* sets the size equal to the image */
@@ -17,6 +16,43 @@ body {
   background-color: solid #f7f5f5
 }
 
+.del-button {
+  cursor: pointer;
+  height: 20px;
+  background-color:#611b1b;
+  border-color:#611b1b;
+  color:#ae3030;
+}
+
+.hw-heading { /* leaving this in css to make it easier to add more to the heading if I need to */
+  color:#170e30
+}
+
+.input-dimen {
+  width: 110px;
+  padding: 5px;
+}
+
+.input-div {
+  /* align-items: center; */
+  display: flex;
+  gap: 8px;
+  margin: 8px auto;
+  justify-content: center;
+}
+
+.overall-page { /* takes up entire page and forces footer to the bottom */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh 
+}
+
+.utility-button {
+  cursor: pointer;
+  width: 20px;
+  height: 20px
+}
+
 .vertical-lines {
   border-collapse: collapse; /* stops overlapping lines */
   /* background-color: #60a4b2; temporary so I can see where the table is */
@@ -27,65 +63,9 @@ body {
   border-right: 2px solid #060606;
   padding: 8px 12px;
   border-top: none;
-  border-bottom: none
+  border-bottom: none;
 }
 
 .vertical-lines td:last-child { /* removes the line on the last item so there is no table border */
   border-right: none
 }
-
-.input-div {
-  /* align-items: center; */
-  display: flex;
-  gap: 8px;
-  margin: 8px auto;
-  justify-content: center;
-  flex: 1 /* pushes footer to the bottom */
-}
-
-.input-dimen {
-  width: 110px;
-  padding: 5px;
-}
-
-.utility-button {
-  cursor: pointer;
-  width: 20px;
-  height: 20px
-}
-
-.del-button {
-  cursor: pointer;
-  height: 20px;
-  background-color:#611b1b;
-  border-color:#611b1b;
-  color:#ae3030;
-}
-
-
-
-/*
-
-.book-item {
-  display: flex;
-  margin-bottom: 8px;
-  color: #e836df;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.del-button {
-  margin-left: 16px;
-  cursor: pointer 
-}
-
-.add-button {
-  margin-left: 10px;
-  cursor: pointer
-}
-
-.input-div {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-} */
