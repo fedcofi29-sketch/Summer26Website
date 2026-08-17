@@ -65,7 +65,7 @@ function App() {
       'id': myWork.length + 1 // id doesn't really matter singe mongoose will eventually make them
     }
 
-    const newIndex = findNewIndex(newHw)
+    const newIndex = findNewIndex(newHW)
     setTasks(tasks.toSpliced(newIndex, 0, newHW))
     
 }
@@ -138,21 +138,27 @@ function App() {
             <img src={downArrow} alt="Add new task"></img>
             </button>
         </div>
-        <table className='vertical-lines'> {/* I think it just looks nicer to only have divisions this way */}
-        <tbody> {/* Not really sure what tbody does but it gives me an error message if I don't have it */}
+        {/* I think it just looks nicer to only have divisions this way */}
+        {/* Not really sure what tbody does but it gives me an error message if I don't have it */}
+        <table className='vertical-lines'> 
+        <tbody> 
           {tasks.map(task => (
             <tr key={task.id} style={{backgroundColor:subjectColors[task.subject], color: 'black'}} >
               <td>{task.task}</td>
               <td>{convertToDate(task.due[0], task.due[1])}</td>
-              <td><button className='utility-button'></button></td>
-              {/* Not exactly sure what I'm going to use this button for exactly.
+              <td> 
+                <button className='utility-button'>
+                {/* Not exactly sure what I'm going to use this button for exactly.
                 My intial idea was to have a checkmark to remember which assignments I've finished but haven't submitted yet.
                 Not sure if that's really necessary. Also could be to mark assignments I need to ask for help on
                 or need long-term progress. Maybe it lights up if I've had something added for more than a certain
                 period of time if I figure out how to track that. */}
+                </button>
+              </td>
               <td><button className='del-button'>Submitted</button></td>
-              <td>
-                <div className="notes-box"> {/* putting these in a div lets them be aligned with flexbox */}
+              <td> 
+                <div className="notes-box"> 
+                  {/* putting these in a div lets them be aligned with flexbox */}
                 <input type='text' placeholder='Assignment Notes...'></input>
                 <button className='save-notes'>
                   <img src={saveButton} alt='Save notes'></img>
