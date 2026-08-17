@@ -1,4 +1,5 @@
 import  './App.css'
+import {useState} from 'react'
 import downArrow from './assets/DownArrow.png'
 import saveButton from './assets/SaveButton.png'
 
@@ -50,7 +51,7 @@ function App() {
       <div style={{flex: '1'}}> {/* this div is everything but the footer */}
       <h1 className='hw-heading'>Homework</h1>
         <div className='input-div'>
-          <select defaultValue="Subject"> 
+          <select defaultValue="Subject" style={{cursor: 'pointer'}}> 
             {/* this can be set to have a color based on the selected subjects once states are added to track the value */}
             <option value="Subject" disabled>Subject</option>
             {subjects.map(subject => (
@@ -58,13 +59,13 @@ function App() {
             ))}
           </select>
           <input type = 'string' placeholder = 'Assignment' className='new-assingment-input-dimen'></input>
-          <input type = 'date' className='new-assignment-input-dimen'></input>
+          <input type = 'date' className='new-assignment-input-dimen' style={{cursor: 'pointer'}}></input>
           <button className='add-new-task'>
             <img src={downArrow} alt="Add new task"></img>
             </button>
         </div>
         <table className='vertical-lines'> {/* I think it just looks nicer to only have divisions this way */}
-        <thead> {/* Not really sure what thead does but it gives me an error message if I don't have it */}
+        <tbody> {/* Not really sure what tbody does but it gives me an error message if I don't have it */}
           {myWork.map(work => (
             <tr key={work.id} style={{backgroundColor:subjectColors[work.subject], color: 'black'}} >
               <td>{work.task}</td>
@@ -86,7 +87,7 @@ function App() {
                 </td>
             </tr>
           ))}
-        </thead>
+        </tbody>
         </table>
         </div>
         <footer className="total-footer">Total Times Submitted: 0</footer> {/* Change this to state variable instead of 0*/}

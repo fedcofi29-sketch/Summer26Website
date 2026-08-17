@@ -45,13 +45,13 @@ button {
 }
 
 .notes-box {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 5px;
   width: 100%
 }
 
-.notes-box [input='text'] {
+.notes-box input[type='text'] {
   flex: 1;
   min-width: 0;
   box-sizing: border-box
@@ -77,7 +77,6 @@ button {
   cursor: pointer;
   width: 20px;
   height: 20px;
-  margin-right: 10px
 }
 
 .save-notes img {
@@ -104,7 +103,9 @@ button {
 .vertical-lines {
   border-collapse: collapse; /* stops overlapping lines */
   margin: 0 auto; /* centers overall table on screen */
-  align-items: center /* centers each item within its space */
+  align-items: center; /* centers each item within its space */
+  width: 80%;
+  table-layout: fixed
 }
 
 .vertical-lines tr {
@@ -121,7 +122,23 @@ button {
   vertical-align: middle
 }
 
-.vertical-lines td:last-child { /* removes the line on the last item so there is no table border */
+.vertical-lines td:nth-child(1) { /* Assignment Name */
+  width: 240px
+}
+
+.vertical-lines td:nth-child(2) { /* Due Date */
+  width: 60px
+}
+
+.vertical-lines td:nth-child(3) { /* Utitilty Button */
+  width: 45px
+}
+
+.vertical-lines td:nth-child(4) { /* Submit Button */
+  width: 110px
+}
+
+.vertical-lines td:last-child { /* Notes Space */
   border-right: none;
-  width: 50%
+  width: auto
 }
