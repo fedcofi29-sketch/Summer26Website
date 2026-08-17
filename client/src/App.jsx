@@ -1,5 +1,6 @@
 import  './App.css'
 import downArrow from './assets/DownArrow.png'
+import saveButton from './assets/SaveButton.png'
 
 const myWork = [
   {
@@ -56,8 +57,8 @@ function App() {
               <option value={subject}>{subject}</option>
             ))}
           </select>
-          <input type = 'string' placeholder = 'Assignment' className='input-dimen'></input>
-          <input type = 'date' className='input-dimen'></input>
+          <input type = 'string' placeholder = 'Assignment' className='new-assingment-input-dimen'></input>
+          <input type = 'date' className='new-assignment-input-dimen'></input>
           <button className='add-new-task'>
             <img src={downArrow} alt="Add new task"></img>
             </button>
@@ -75,12 +76,20 @@ function App() {
                 or need long-term progress. Maybe it lights up if I've had something added for more than a certain
                 period of time if I figure out how to track that. */}
               <td><button className='del-button'>Submitted</button></td>
+              <td>
+                <div className="notes-box"> {/* putting these in a div lets them be aligned with flexbox */}
+                <input type='text' placeholder='Assignment Notes...'></input>
+                <button className='save-notes'>
+                  <img src={saveButton} alt='Save notes'></img>
+                </button>
+                </div>
+                </td>
             </tr>
           ))}
         </thead>
         </table>
         </div>
-        <footer>Total</footer>
+        <footer className="total-footer">Total Times Submitted: 0</footer> {/* Change this to state variable instead of 0*/}
     </div>
   )
 }

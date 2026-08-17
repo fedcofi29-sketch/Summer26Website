@@ -2,18 +2,29 @@ body {
   background-color:#ac98e3 /* Chose this color randomly to see if it would work... probably should change */
 }
 
+button {
+  box-sizing: border-box; /* this centers buttons including their borders and not just their text */
+  vertical-align: middle
+}
+
 /* All the className css is organized alphabetically
     I tried doing it similar to how it appears in the jsx, but that didn't really work */
 
 .add-new-task {
   display: inline-flex; /* sets the size equal to the image */
+  padding: 5px;
+  outline: none;
+  cursor: pointer;
+  width: 40px;
+  height: 40px
 }
 
 .add-new-task img {
   display: block;
-  width: 20px;
-  height: auto;
-  background-color: solid #f7f5f5
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  object-fit: contain
 }
 
 .del-button {
@@ -28,13 +39,25 @@ body {
   color:#170e30
 }
 
-.input-dimen {
+.new-assignment-input-dimen {
   width: 110px;
   padding: 5px;
 }
 
+.notes-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%
+}
+
+.notes-box [input='text'] {
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box
+}
+
 .input-div {
-  /* align-items: center; */
   display: flex;
   gap: 8px;
   margin: 8px auto;
@@ -47,6 +70,31 @@ body {
   min-height: 100vh 
 }
 
+.save-notes {
+  display: inline-flex;
+  padding: 0;
+  outline: none;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px
+}
+
+.save-notes img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  object-fit: contain
+}
+
+.total-footer { /* also not sure about these colors */
+  color: #000000;
+  background-color: #ffffff; 
+  padding: 5px;
+  margin: auto /* centers on page */
+}
+
 .utility-button {
   cursor: pointer;
   width: 20px;
@@ -55,17 +103,25 @@ body {
 
 .vertical-lines {
   border-collapse: collapse; /* stops overlapping lines */
-  /* background-color: #60a4b2; temporary so I can see where the table is */
   margin: 0 auto; /* centers overall table on screen */
   align-items: center /* centers each item within its space */
 }
+
+.vertical-lines tr {
+  justify-content: center;
+  margin: auto
+}
+
 .vertical-lines td {
   border-right: 2px solid #060606;
   padding: 8px 12px;
   border-top: none;
   border-bottom: none;
+  text-align: center;
+  vertical-align: middle
 }
 
 .vertical-lines td:last-child { /* removes the line on the last item so there is no table border */
-  border-right: none
+  border-right: none;
+  width: 50%
 }
