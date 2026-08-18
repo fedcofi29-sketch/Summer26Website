@@ -7,19 +7,19 @@ const myWork = [
   {
     'subject': 'English',
     'task': 'Essay',
-    'due': [8, 24, 2026],
+    'due': new Date(2026, 7, 20), // Turning these into datestrings as well to try and simplify the code
     'id': 1
   },
   {
     'subject': 'Math',
     'task': 'Worksheet',
-    'due': [8, 20, 2026],
+    'due': new Date(2026, 7, 24),
     'id': 2
   },
   {
     'subject': 'History',
     'task': 'Annotations',
-    'due': [9, 1, 2026],
+    'due': new Date(2026, 8, 1),
     'id': 3
   }
 ]
@@ -27,7 +27,7 @@ const myWork = [
 const Months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 const subjectColors = { // Kind of arbitrary, but this is how I set my tabgroups
   "SEL": '#921892',
-  "Math": '#d32f2fa3',
+  "Math": '#c81a1ac9',
   'Spanish': '#b3277b',
   'Biology': '#206b1e',
   'Mech Eng': '#d17224',
@@ -37,11 +37,42 @@ const subjectColors = { // Kind of arbitrary, but this is how I set my tabgroups
 }
 const subjects = ["SEL", "Math", "Spanish", "Biology", "Mech Eng", "History", "Modern", "English"]
 
-function convertToDate(month, day) { // Just learned there is a literal date input, so this might not be needed
-  const monthName = Months[month-1] // Account for index starting at 0
+function convertToDate(month, day) { // There's probably a way to shortcut this but it's fine for now
+  const monthName = Months[month] // Date.getMonth already acounts for index
   return `${monthName} ${day}`
 }
 
+
+function TaskRow({task, onSubmit}) {
+  const [notes, setNotes] = useState('')
+  
+  return (
+  <tr style={{backgroundColor:subjectColors[task.subject], color: 'black'}} >
+    <td>{task.task}</td>
+    <td>{convertToDate(task.due.getMonth(), task.due.getDate())}</td>
+    <td> 
+      <button className='utility-button'>
+        {/* Not exactly sure what I'm going to use this button for exactly.
+        My intial idea was to have a checkmark to remember which assignments I've finished but haven't submitted yet.
+        Not sure if that's really necessary. Also could be to mark assignments I need to ask for help on
+        or need long-term progress. Maybe it lights up if I've had something added for more than a certain
+        period of time if I figure out how to track that. */}
+        </button>
+      </td>
+      <td><button className='submit-button' onClick={()=>onSubmit(task.id)}>
+        {/* The button filters out the task that matches its id */}Submitted</button></td>
+      <td> 
+        <div className="notes-box"> 
+          {/* putting these in a div lets them be aligned with flexbox */}
+          <input type='text' placeholder='Assignment Notes...' 
+          value={notes} onChange={(e)=>setNotes(e.target.value)}></input>
+          <button className='save-notes'>
+            <img src={saveButton} alt='Save notes'></img>
+          </button>
+        </div>
+      </td>
+  </tr>)
+}
 /* I looked through the inputs and found way more than I expected. Remember to check those in the future.
     Checkbox, submit, date/time could all be useful going forward. 
       After writing that I then also found dropdowns which are really useful. */
@@ -50,11 +81,14 @@ function App() {
   const [inputSubject, setInputSubject] = useState()
   const [inputAssignment, setInputAssignment] = useState('')
   const [inputDate, setInputDate] = useState('') // Date passed through as "YYYY-MM-DD" string
+  const [totalSubmitted, setTotalSubmitted] = useState(0)
   
   const handleDateChange = (e) => {
     const dateString = e.target.value
-    const [year, month, day] = dateString.split('-').map(Number) // Breaks string at each hyphen and converts them to numbers
-    setInputDate([day, month, year])
+    const [year, month, day] = dateString.split('-').map(Number) // converts to numbers before Date() to stop timezone differnces
+    const dateObject = new Date(year, month-1, day) // accounts for month index
+    console.log(dateObject)
+    setInputDate(dateObject)
   }
 
   function handleAddClick() {
@@ -62,60 +96,45 @@ function App() {
       'subject': inputSubject,
       'task': inputAssignment,
       'due': inputDate,
-      'id': myWork.length + 1 // id doesn't really matter singe mongoose will eventually make them
+      'id': tasks.length + 1 // id doesn't really matter since mongoose will eventually make them
     }
 
     const newIndex = findNewIndex(newHW)
     setTasks(tasks.toSpliced(newIndex, 0, newHW))
-    
 }
-  function compareTwoDates(a, b) {
-    if (a < b) {
-      return true
-    } else if (a > b) {
-      return false
-    } else {
-      return 'equal'
-    }
+  
+  const handleSubmit = (id) => {
+    setTasks(tasks.filter(t=>t.id!==id))
+    setTotalSubmitted(totalSubmitted + 1)
   }
-
   function findNewIndex(newHW) {
+    // I initially had several layers of if else before I learned about date objects and getTime
     let index
-    for (let i = 0; i < myWork.length-1; i++) {
-      isNewAYearEarlier = compareTwoDates(newHW.due[2], myWork[i].due[2])
+    for (let i = 0; i < tasks.length; i++) {
+      const isNewEarlier = compareTwoDates(newHW.due.getTime(), tasks[i].due.getTime())
 
-      if (isNewAYearEarlier) { // if the new is earlier, it breaks the loop and sets this as the index
+      if (isNewEarlier > 0) { // if the new is earlier, it breaks the loop and sets this as the index
         index = i
         break
-      } else if (!isNewAYearEarlier) { // if the new is later, it continues to the next item in the list
+      } else if (isNewEarlier < 0) { // if the new is later, it continues to the next item in the list
+        index = i + 1 // this way the last item goes to the end
         continue
-      } else { // basically the same loop but checking for months
-        // there might be a way to pull this out into another function but I'm not sure how to include breaks and such then
-        isNewAMonthEarlier = compareTwoDates(newHW.due[1], myWork[i].due[1])
-
-        if (isNewAMonthEarlier) { 
-          index = i
-          break
-        } else if (!isNewAMonthrEarlier) {
-          continue
-        } else { // basically the same loop but checking for days
-        
-          isNewADayEarlier = compareTwoDates(newHW.due[1], myWork[i].due[1])
-
-          if (isNewADayEarlier) { 
-            index = i
-            break
-          } else if (!isNewADayrEarlier) {
-            index = i + 1 // so it adds itself to the end if it is the last item
-            continue
-          } else {
-            // if they're due the same day I'm assuming the assingment that was put there first if from an earlier class
-            index = i + 1 
-        }
+      } else { // if they're due the same day I want the one I've had for longer to be on top
+        index = i + 1
+        break
       }
     }
-  }
   return index
+  }
+
+  function compareTwoDates(a, b) { // Switched to numbers because 'equal' string was counting as true
+    if (a < b) {
+      return 1
+    } else if (a > b) {
+      return -1
+    } else {
+      return 0
+    }
   }
 
   return (
@@ -127,11 +146,11 @@ function App() {
             {/* this can be set to have a color based on the selected subjects once states are added to track the value */}
             <option value="Subject" disabled>Subject</option>
             {subjects.map(subject => (
-              <option value={subject}>{subject}</option>
+              <option key={subject}value={subject}>{subject}</option>
             ))}
           </select>
-          <input type='string' placeholder='Assignment' 
-          className='new-assingment-input-dimen' onChange={(e)=>setAssignment(e.target.value)}></input>
+          <input type='string' placeholder='Assignment'
+          className='new-assingment-input-dimen' onChange={(e)=>setInputAssignment(e.target.value)}></input>
           <input type='date' className='new-assignment-input-dimen' 
           style={{cursor: 'pointer'}} onChange={handleDateChange}></input>
           <button className='add-new-task' onClick={handleAddClick}>
@@ -143,34 +162,16 @@ function App() {
         <table className='vertical-lines'> 
         <tbody> 
           {tasks.map(task => (
-            <tr key={task.id} style={{backgroundColor:subjectColors[task.subject], color: 'black'}} >
-              <td>{task.task}</td>
-              <td>{convertToDate(task.due[0], task.due[1])}</td>
-              <td> 
-                <button className='utility-button'>
-                {/* Not exactly sure what I'm going to use this button for exactly.
-                My intial idea was to have a checkmark to remember which assignments I've finished but haven't submitted yet.
-                Not sure if that's really necessary. Also could be to mark assignments I need to ask for help on
-                or need long-term progress. Maybe it lights up if I've had something added for more than a certain
-                period of time if I figure out how to track that. */}
-                </button>
-              </td>
-              <td><button className='del-button'>Submitted</button></td>
-              <td> 
-                <div className="notes-box"> 
-                  {/* putting these in a div lets them be aligned with flexbox */}
-                <input type='text' placeholder='Assignment Notes...'></input>
-                <button className='save-notes'>
-                  <img src={saveButton} alt='Save notes'></img>
-                </button>
-                </div>
-                </td>
-            </tr>
+            <TaskRow
+             key={task.id}
+             task={task}
+             onSubmit={handleSubmit}
+             />
           ))}
         </tbody>
         </table>
         </div>
-        <footer className="total-footer">Total Times Submitted: 0</footer> {/* Change this to state variable instead of 0*/}
+        <footer className="total-footer">Total Times Submitted: {totalSubmitted}</footer> 
     </div>
   )
 }
