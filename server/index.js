@@ -1,66 +1,46 @@
-const express = require('express') // Server runs on
-const mongoose = require('mongoose') // This is where the data gets sent
-const cors = require('cors') // Allows data to be shared
+const express = require('express')
 const app = express()
-app.use(cors())
 const PORT = 5050
-
-mongoose.connect('mongodb://127.0.0.1:27017/bookList') // My database
-.then(() => console.log('Connected to MongoDB'))
-.catch((err) => console.log('Server not connecting:', err))
-
-const bookSchema = new mongoose.Schema({ // All data has to fit this format
-  title: {
-    type: String,
-    required: true
-  },
-  author: {
-    type: String,
-    required: true
-  },
-})
 
 app.use(express.json())
 
-const Book = mongoose.model('Book', bookSchema)
-
-app.get('/api/bookList', async (req, res) => {
-  try {
-    const books = await Book.find() // Looks for data being passed through that matches the schema
-    res.status(200).json(books)
-  } catch (error) {
-    console.error('database error:', error)
-    res.status(500).json('Failed to get books')
+let dummyData = [
+  {
+    'subject': 'English',
+    'task': 'Essay',
+    'due': new Date(2026, 7, 20),
+    'id': 1
+  },
+  {
+    'subject': 'Math',
+    'task': 'Worksheet',
+    'due': new Date(2026, 7, 24),
+    'id': 2
+  },
+  {
+    'subject': 'History',
+    'task': 'Annotations',
+    'due': new Date(2026, 8, 1),
+    'id': 3
   }
+]
+
+app.get('/api/HW', (req, res) => {
+  res.status(200).json(dummyData)
 })
 
-app.post('/api/bookList', async (req, res) => {
-  try {
-    const newBook = new Book({ // Format that processes data
-    "title": req.body.title,
-    "author": req.body.author,
-  }) 
-    const savedBook = await newBook.save()
-    res.status(201).json(savedBook)
-  } catch (error) {
-    res.status(400).json('Failed to create book')
+app.post('/api/HW', (req, res) => {
+  const [subject, task, date] = req.body
+  const newTask = {
+    'subject': subject || 'No subject',
+    'task': task || 'No task',
+    'due': date ? new Date(date): 'No due date',
+    'id': dummyData.length + 1
   }
-})
 
-app.delete('/api/bookList/:id', async (req, res) => {
-  try {
-    const {id} = req.params
+  dummyData.push(newTask)
 
-    const deletedBook = await Book.findByIdAndDelete(id) // Only created if a book is deleted
-    if (!deletedBook) { // Sends error message if failed
-      return res.status(404).json({message: 'Book not found'})
-    } 
-    
-    res.status(200).json({message: 'Book deleted'})
-  } catch (error) {
-    console.error('Error deleting book from database:', error) // Catches other errors
-    res.status(500).json({message: 'Failure to delete book'})
-  }
+  res.status(201).json(newTask)
 })
 
 app.listen(PORT, () => {
