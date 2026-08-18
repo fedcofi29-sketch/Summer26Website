@@ -27,7 +27,11 @@ button {
   object-fit: contain
 }
 
-
+.checkbox {
+  cursor: pointer;
+  width: 20px;
+  height: 20px
+}
 
 .hw-heading { /* leaving this in css to make it easier to add more to the heading if I need to */
   color:#170e30
@@ -94,12 +98,6 @@ button {
   background-color: #ffffff; 
   padding: 5px;
   margin: auto /* centers on page */
-}
-
-.utility-button {
-  cursor: pointer;
-  width: 20px;
-  height: 20px
 }
 
 .vertical-lines {

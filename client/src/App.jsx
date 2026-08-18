@@ -45,19 +45,14 @@ function convertToDate(month, day) { // There's probably a way to shortcut this 
 
 function TaskRow({task, onSubmit}) {
   const [notes, setNotes] = useState('')
+  const [checked, setChecked] = useState(false)
   
   return (
   <tr style={{backgroundColor:subjectColors[task.subject], color: 'black'}} >
     <td>{task.task}</td>
     <td>{convertToDate(task.due.getMonth(), task.due.getDate())}</td>
     <td> 
-      <button className='utility-button'>
-        {/* Not exactly sure what I'm going to use this button for exactly.
-        My intial idea was to have a checkmark to remember which assignments I've finished but haven't submitted yet.
-        Not sure if that's really necessary. Also could be to mark assignments I need to ask for help on
-        or need long-term progress. Maybe it lights up if I've had something added for more than a certain
-        period of time if I figure out how to track that. */}
-        </button>
+      <input type="checkbox" className="checkbox" onChange={(e)=>setChecked(e.target.checked)}></input>
       </td>
       <td><button className='submit-button' onClick={()=>onSubmit(task.id)}>
         {/* The button filters out the task that matches its id */}Submitted</button></td>
@@ -96,17 +91,19 @@ function App() {
       'subject': inputSubject,
       'task': inputAssignment,
       'due': inputDate,
+      'added': Date(), // Adding this in case I do the reminder for long assignments thing
       'id': tasks.length + 1 // id doesn't really matter since mongoose will eventually make them
     }
 
     const newIndex = findNewIndex(newHW)
     setTasks(tasks.toSpliced(newIndex, 0, newHW))
-}
+  }
   
   const handleSubmit = (id) => {
     setTasks(tasks.filter(t=>t.id!==id))
     setTotalSubmitted(totalSubmitted + 1)
   }
+
   function findNewIndex(newHW) {
     // I initially had several layers of if else before I learned about date objects and getTime
     let index
@@ -162,7 +159,7 @@ function App() {
         <table className='vertical-lines'> 
         <tbody> 
           {tasks.map(task => (
-            <TaskRow
+            <TaskRow // Made this its own function to allow state creation. Also helps organize
              key={task.id}
              task={task}
              onSubmit={handleSubmit}
