@@ -1,46 +1,60 @@
 const express = require('express')
+const mongoose = require('mongoose')
 const app = express()
 const PORT = 5050
 
-app.use(express.json())
+mongoose.connect('mongodb://127.0.0.1:27017/HWOrganizer')
+.then(() => console.log('Connected to MongoDB'))
+.catch((err) => console.log('Server not connecting:', err))
 
-let dummyData = [
-  {
-    'subject': 'English',
-    'task': 'Essay',
-    'due': new Date(2026, 7, 20),
-    'id': 1
+const taskSchema = new mongoose.Schema({
+  subject: {
+    type: String,
+    required: true
   },
-  {
-    'subject': 'Math',
-    'task': 'Worksheet',
-    'due': new Date(2026, 7, 24),
-    'id': 2
+  task: {
+    type: String,
+    required: true
   },
-  {
-    'subject': 'History',
-    'task': 'Annotations',
-    'due': new Date(2026, 8, 1),
-    'id': 3
+  due: {
+    type: Date,
+    required: true
+  },
+  added: {
+    type: Date,
+    required: true
   }
-]
-
-app.get('/api/HW', (req, res) => {
-  res.status(200).json(dummyData)
 })
 
-app.post('/api/HW', (req, res) => {
-  const [subject, task, date] = req.body
-  const newTask = {
-    'subject': subject || 'No subject',
-    'task': task || 'No task',
-    'due': date ? new Date(date): 'No due date',
-    'id': dummyData.length + 1
+app.use(express.json())
+
+const Task = mongoose.model('Task', taskSchema)
+
+app.get('/api/HW', async (req, res) => {
+  try {
+    const tasks = await Task.find() // Only picks up data that matche the schema|=> I can use more finds if I have more than one schema
+    res.status(200).json(tasks)
+  } catch (error) {
+    console.error('database error:', error)
+    res.status(500).json('Failed to get tasks')
   }
+})
 
-  dummyData.push(newTask)
-
-  res.status(201).json(newTask)
+app.post('/api/HW', async (req, res) => {
+  try {
+    const [subject, task, date] = req.body
+    const newTask = Task({
+      'subject': subject,
+      'task': task,
+      'due': date,
+      'added': Date(),
+    })
+    const savedTask = await newTask.save()
+    res.status(201).json(savedTask)
+  } catch (error) {
+    console.error('database error:', error)
+    res.status(400).json('Failed to create task')
+  }
 })
 
 app.listen(PORT, () => {
