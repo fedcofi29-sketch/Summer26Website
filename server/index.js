@@ -62,6 +62,22 @@ app.post('/api/HWOrganizer', async (req, res) => {
   }
 })
 
+app.delete('/api/HWOrganizer/:id', async (req, res) => {
+  try {
+    const {id} = req.params
+
+    const deletedTask = await Task.findByIdAndDelete(id) // Only created if a task was deleted
+    if (!deletedTask) { // Sends error message if failed
+      return res.status(404).json({message: 'Task not found'})
+    } 
+    
+    res.status(200).json({message: 'Task deleted'})
+  } catch (error) {
+    console.error('Error deleting task from database:', error) // Catches other errors
+    res.status(500).json({message: 'Failure to delete task'})
+  }
+})
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`)
 })

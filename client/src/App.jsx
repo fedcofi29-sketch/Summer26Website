@@ -105,9 +105,16 @@ function App() {
   }
   
   
-  const handleSubmit = (id) => {
-    setTasks(tasks.filter(t=>t._id!==id))
-    setTotalSubmitted(totalSubmitted + 1)
+  async function handleSubmit(id) { // This is the same as in bookList
+    try {
+    const response = await fetch(`http://localhost:5050/api/HWOrganizer/${id}`, {
+      method: 'DELETE' // runs app.delete in index.js w/ this data
+    })
+    if (response.ok) {
+      setTasks(tasks.filter(task => task._id !== id))
+    }} catch (error) {
+      console.error('Error deleting task:', error)
+    }
   }
 
   return (
