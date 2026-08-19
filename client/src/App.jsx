@@ -1,28 +1,7 @@
 import  './App.css'
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import downArrow from './assets/DownArrow.png'
 import saveButton from './assets/SaveButton.png'
-
-const myWork = [
-  {
-    'subject': 'English',
-    'task': 'Essay',
-    'due': new Date(2026, 7, 20), // Turning these into datestrings as well to try and simplify the code
-    'id': 1
-  },
-  {
-    'subject': 'Math',
-    'task': 'Worksheet',
-    'due': new Date(2026, 7, 24),
-    'id': 2
-  },
-  {
-    'subject': 'History',
-    'task': 'Annotations',
-    'due': new Date(2026, 8, 1),
-    'id': 3
-  }
-]
 
 const Months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 const subjectColors = { // Kind of arbitrary, but this is how I set my tabgroups
@@ -47,14 +26,16 @@ function TaskRow({task, onSubmit}) {
   const [notes, setNotes] = useState('')
   const [checked, setChecked] = useState(false)
   
+  const dueDate = new Date(task.due) // json server data passes through as string
+
   return (
   <tr style={{backgroundColor:subjectColors[task.subject], color: 'black'}} >
     <td>{task.task}</td>
-    <td>{convertToDate(task.due.getMonth(), task.due.getDate())}</td>
+    <td>{convertToDate(dueDate.getMonth(), dueDate.getDate())}</td>
     <td> 
       <input type="checkbox" className="checkbox" onChange={(e)=>setChecked(e.target.checked)}></input>
       </td>
-      <td><button className='submit-button' onClick={()=>onSubmit(task.id)}>
+      <td><button className='submit-button' onClick={()=>onSubmit(task._id)}>
         {/* The button filters out the task that matches its id */}Submitted</button></td>
       <td> 
         <div className="notes-box"> 
@@ -72,12 +53,30 @@ function TaskRow({task, onSubmit}) {
     Checkbox, submit, date/time could all be useful going forward. 
       After writing that I then also found dropdowns which are really useful. */
 function App() {
-  const [tasks, setTasks] = useState(myWork) // Initial tasks
+  const [tasks, setTasks] = useState([]) // Set to database on useEffect
   const [inputSubject, setInputSubject] = useState()
   const [inputAssignment, setInputAssignment] = useState('')
   const [inputDate, setInputDate] = useState('') // Date passed through as "YYYY-MM-DD" string
   const [totalSubmitted, setTotalSubmitted] = useState(0)
   
+  async function fetchTasks() { // This is the same as it was in the bookList
+    try {
+        const response = await fetch('http://localhost:5050/api/HWOrganizer') // Sends request to server for data
+        const data = await response.json() // Converts data into js
+        
+        data.sort((a, b) => new Date(a.due) - new Date(b.due)) 
+        // Compares each task's date to each other and sorts the earliest first
+        
+        setTasks(data)
+      } catch (error) {
+        console.error('Error fetching data from server:', error)
+      }
+  }
+
+  useEffect(() => {
+    fetchTasks()
+  }, []) // [] prevents this from running each time the page rerenders
+
   const handleDateChange = (e) => {
     const dateString = e.target.value
     const [year, month, day] = dateString.split('-').map(Number) // converts to numbers before Date() to stop timezone differnces
@@ -86,52 +85,29 @@ function App() {
     setInputDate(dateObject)
   }
 
-  function handleAddClick() {
-    const newHW = {
-      'subject': inputSubject,
-      'task': inputAssignment,
-      'due': inputDate,
-      'added': Date(), // Adding this in case I do the reminder for long assignments thing
-      'id': tasks.length + 1 // id doesn't really matter since mongoose will eventually make them
-    }
-
-    const newIndex = findNewIndex(newHW)
-    setTasks(tasks.toSpliced(newIndex, 0, newHW))
+  async function handleAddClick(subject, assignment, due) { // This is the same as it was in the bookList
+    if (subject === "Subject" || assignment === "" || due === "") return // Won't add if one of the variables is blank
+      try {
+        const response = await fetch('http://localhost:5050/api/HWOrganizer', { // Sends to server
+          method: 'POST', // Runs app.post in index.js w/ this data
+          headers: {
+            'Content-Type': 'application/json' // Tells it what type of data to receive
+          },
+          body: JSON.stringify([subject, assignment, due]) // Formats data to send
+        })       
+        // const data = await response.json() This is how to get the created value if I ever need that for some reason
+        /* I'm not reseting the inputs because I think it will make more sense if they stay
+          Don't really have a reason beyond it seeming more natural */
+        fetchTasks()
+      } catch (error) {
+        console.error('Error sending data:', error)
+      }
   }
   
+  
   const handleSubmit = (id) => {
-    setTasks(tasks.filter(t=>t.id!==id))
+    setTasks(tasks.filter(t=>t._id!==id))
     setTotalSubmitted(totalSubmitted + 1)
-  }
-
-  function findNewIndex(newHW) {
-    // I initially had several layers of if else before I learned about date objects and getTime
-    let index
-    for (let i = 0; i < tasks.length; i++) {
-      const isNewEarlier = compareTwoDates(newHW.due.getTime(), tasks[i].due.getTime())
-
-      if (isNewEarlier > 0) { // if the new is earlier, it breaks the loop and sets this as the index
-        index = i
-        break
-      } else if (isNewEarlier < 0) { // if the new is later, it continues to the next item in the list
-        index = i + 1 // this way the last item goes to the end
-        continue
-      } else { // if they're due the same day I want the one I've had for longer to be on top
-        index = i + 1
-        break
-      }
-    }
-  return index
-  }
-
-  function compareTwoDates(a, b) { // Switched to numbers because 'equal' string was counting as true
-    if (a < b) {
-      return 1
-    } else if (a > b) {
-      return -1
-    } else {
-      return 0
-    }
   }
 
   return (
@@ -150,7 +126,7 @@ function App() {
           className='new-assingment-input-dimen' onChange={(e)=>setInputAssignment(e.target.value)}></input>
           <input type='date' className='new-assignment-input-dimen' 
           style={{cursor: 'pointer'}} onChange={handleDateChange}></input>
-          <button className='add-new-task' onClick={handleAddClick}>
+          <button className='add-new-task' onClick={()=>handleAddClick(inputSubject, inputAssignment, inputDate)}>
             <img src={downArrow} alt="Add new task"></img>
             </button>
         </div>
@@ -160,7 +136,7 @@ function App() {
         <tbody> 
           {tasks.map(task => (
             <TaskRow // Made this its own function to allow state creation. Also helps organize
-             key={task.id}
+             key={task._id}
              task={task}
              onSubmit={handleSubmit}
              />

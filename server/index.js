@@ -1,5 +1,9 @@
+/* This is all fundamentally the same as in the bookList tutorial
+I tried new stuff with the frontend but the backend is pretty much the same */
+
 const express = require('express')
 const mongoose = require('mongoose')
+const cors = require('cors')
 const app = express()
 const PORT = 5050
 
@@ -26,11 +30,12 @@ const taskSchema = new mongoose.Schema({
   }
 })
 
+app.use(cors())
 app.use(express.json())
 
 const Task = mongoose.model('Task', taskSchema)
 
-app.get('/api/HW', async (req, res) => {
+app.get('/api/HWOrganizer', async (req, res) => {
   try {
     const tasks = await Task.find() // Only picks up data that matche the schema|=> I can use more finds if I have more than one schema
     res.status(200).json(tasks)
@@ -40,7 +45,7 @@ app.get('/api/HW', async (req, res) => {
   }
 })
 
-app.post('/api/HW', async (req, res) => {
+app.post('/api/HWOrganizer', async (req, res) => {
   try {
     const [subject, task, date] = req.body
     const newTask = Task({
