@@ -33,7 +33,7 @@ function TaskRow({task, onSubmit}) {
     <td>{task.task}</td>
     <td>{convertToDate(dueDate.getMonth(), dueDate.getDate())}</td>
     <td> 
-      <input type="checkbox" className="checkbox" onChange={(e)=>setChecked(e.target.checked)}></input>
+      <input type="checkbox" className="checkbox" value={checked} onChange={(e)=>setChecked(e.target.checked)}></input>
       </td>
       <td><button className='submit-button' onClick={()=>onSubmit(task._id)}>
         {/* The button filters out the task that matches its id */}Submitted</button></td>

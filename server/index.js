@@ -15,10 +15,12 @@ app.use(express.json())
 const Task = require('./schema/Task')
 const Notes = require('./schema/Notes')
 const SubmitCounter = require('./schema/SubmitCounter')
+const Checkbox = require('./schema/Checkbox')
 
 app.get('/api/HWOrganizer', async (req, res) => {
   try {
     const tasks = await Task.find() // Only picks up data that matche the schema|=> I can use more finds if I have more than one schema
+    const submitCount = await SubmitCounter.find()
     res.status(200).json(tasks)
   } catch (error) {
     console.error('database error:', error)
@@ -53,9 +55,15 @@ app.post('/api/tasks', async (req, res) => { // changed route to allow different
 app.post('/api/submitcount', async (req, res) => {
   try {
     const {count} = req.body
-    const newCount = new SubmitCounter({
+    try { // Only create it if it doesn't exist
+      const submitExists = await SubmitCounter.find()
+      res.status(200).json('Already created')
+    } catch (error) {
+      const newCount = new SubmitCounter({
       'count': count
     })
+    }
+    
     const savedCount = await newCount.save()
     res.status(201).json(savedCount)
   } catch (error) {
