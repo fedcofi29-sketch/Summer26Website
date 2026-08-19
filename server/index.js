@@ -26,9 +26,9 @@ app.get('/api/HWOrganizer', async (req, res) => {
   }
 })
 
-app.post('/api/HWOrganizer', async (req, res) => {
+app.post('/api/tasks', async (req, res) => { // changed route to allow different types of post
   try {
-    const [subject, task, date] = req.body
+    const {subject, task, date} = req.body
     const newTask = new Task({
       'subject': subject,
       'task': task,
@@ -40,6 +40,20 @@ app.post('/api/HWOrganizer', async (req, res) => {
   } catch (error) {
     console.error('database error:', error)
     res.status(400).json('Failed to create task')
+  }
+})
+
+app.post('/api/submitcount', async (req, res) => {
+  try {
+    const {count} = req.body
+    const newCount = new SubmitCounter({
+      'count': count
+    })
+    const savedCount = await newCount.save()
+    res.status(201).json(savedCount)
+  } catch (error) {
+    console.error('database error:', error)
+    res.status(400).json('Failed to update count')
   }
 })
 

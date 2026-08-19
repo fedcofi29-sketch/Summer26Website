@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
 
 const counterSchema = new mongoose.Schema({
-  counter: {
-    type: String,
+  count: {
+    type: Number,
     required: true
   }
 })

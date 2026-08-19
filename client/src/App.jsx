@@ -86,16 +86,15 @@ function App() {
   }
 
   async function handleAddClick(subject, assignment, due) { // This is the same as it was in the bookList
-    if (subject === "Subject" || assignment === "" || due === "") return // Won't add if one of the variables is blank
+    if (!subject || subject === "Subject" || !assignment || !due) return // Won't add if one of the variables is blank
       try {
-        const response = await fetch('http://localhost:5050/api/HWOrganizer', { // Sends to server
+        const response = await fetch('http://localhost:5050/api/tasks', { // Sends to server
           method: 'POST', // Runs app.post in index.js w/ this data
           headers: {
             'Content-Type': 'application/json' // Tells it what type of data to receive
           },
-          body: JSON.stringify([subject, assignment, due]) // Formats data to send
+          body: JSON.stringify({subject, assignment, due}) // Formats data to send
         })       
-        // const data = await response.json() This is how to get the created value if I ever need that for some reason
         /* I'm not reseting the inputs because I think it will make more sense if they stay
           Don't really have a reason beyond it seeming more natural */
         fetchTasks()
@@ -112,8 +111,24 @@ function App() {
     })
     if (response.ok) {
       setTasks(tasks.filter(task => task._id !== id))
+      updateSubmitCount()
     }} catch (error) {
       console.error('Error deleting task:', error)
+    }
+  }
+
+  async function updateSubmitCount() {
+    try {
+      const response = await fetch('http://localhost:5050/api/submitcount', { // Sends to server
+          method: 'POST', // Runs app.post in index.js w/ this data
+          headers: {
+            'Content-Type': 'application/json' // Tells it what type of data to receive
+          },
+          body: JSON.stringify({'count': totalSubmitted + 1}) // Formats data to send
+        })
+      setTotalSubmitted(totalSubmitted + 1) // No need to fetch the data again
+    } catch (error) {
+      console.error('Error updating count:', error)
     }
   }
 
