@@ -56,7 +56,7 @@ app.post('/api/submitcount', async (req, res) => {
   try {
     const {count} = req.body
     try { // Only create it if it doesn't exist
-      const submitExists = await SubmitCounter.find()
+      const newCount = await SubmitCounter.find()
       res.status(200).json('Already created')
     } catch (error) {
       const newCount = new SubmitCounter({
