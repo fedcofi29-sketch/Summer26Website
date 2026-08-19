@@ -28,18 +28,25 @@ app.get('/api/HWOrganizer', async (req, res) => {
 
 app.post('/api/tasks', async (req, res) => { // changed route to allow different types of post
   try {
-    const {subject, task, date} = req.body
+    const {subject, assignment, due} = req.body
+    
+    const [year, month, day] = due.split('-').map(Number)
+    const checkDate = new Date(year, month - 1, day)
+    if (isNaN(checkDate.getTime())) {
+      return res.status(400).json('Invalid date format')
+    }
+
     const newTask = new Task({
       'subject': subject,
-      'task': task,
-      'due': date,
+      'task': assignment,
+      'due': checkDate,
       'added': new Date(),
     })
     const savedTask = await newTask.save()
     res.status(201).json(savedTask)
   } catch (error) {
     console.error('database error:', error)
-    res.status(400).json('Failed to create task')
+    res.status(400).json({message: 'Failed to create task:', error:  error.message})
   }
 })
 

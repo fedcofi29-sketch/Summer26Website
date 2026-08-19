@@ -78,11 +78,7 @@ function App() {
   }, []) // [] prevents this from running each time the page rerenders
 
   const handleDateChange = (e) => {
-    const dateString = e.target.value
-    const [year, month, day] = dateString.split('-').map(Number) // converts to numbers before Date() to stop timezone differnces
-    const dateObject = new Date(year, month-1, day) // accounts for month index
-    console.log(dateObject)
-    setInputDate(dateObject)
+    setInputDate(e.target.value)
   }
 
   async function handleAddClick(subject, assignment, due) { // This is the same as it was in the bookList
@@ -94,7 +90,12 @@ function App() {
             'Content-Type': 'application/json' // Tells it what type of data to receive
           },
           body: JSON.stringify({subject, assignment, due}) // Formats data to send
-        })       
+        })   
+        if (!response.ok) {
+          const errorData = await response.json()
+          console.error('Server error:', errorData)
+          return
+        }
         /* I'm not reseting the inputs because I think it will make more sense if they stay
           Don't really have a reason beyond it seeming more natural */
         fetchTasks()
@@ -144,7 +145,7 @@ function App() {
               <option key={subject}value={subject}>{subject}</option>
             ))}
           </select>
-          <input type='string' placeholder='Assignment'
+          <input type='text' placeholder='Assignment'
           className='new-assingment-input-dimen' onChange={(e)=>setInputAssignment(e.target.value)}></input>
           <input type='date' className='new-assignment-input-dimen' 
           style={{cursor: 'pointer'}} onChange={handleDateChange}></input>
