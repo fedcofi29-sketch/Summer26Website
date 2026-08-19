@@ -1,6 +1,3 @@
-/* This is all fundamentally the same as in the bookList tutorial
-I tried new stuff with the frontend but the backend is pretty much the same */
-
 const express = require('express')
 const mongoose = require('mongoose')
 const cors = require('cors')
@@ -11,29 +8,13 @@ mongoose.connect('mongodb://127.0.0.1:27017/HWOrganizer')
 .then(() => console.log('Connected to MongoDB'))
 .catch((err) => console.log('Server not connecting:', err))
 
-const taskSchema = new mongoose.Schema({
-  subject: {
-    type: String,
-    required: true
-  },
-  task: {
-    type: String,
-    required: true
-  },
-  due: {
-    type: Date,
-    required: true
-  },
-  added: {
-    type: Date,
-    required: true
-  }
-})
-
 app.use(cors())
 app.use(express.json())
 
-const Task = mongoose.model('Task', taskSchema)
+// Moved schema to another file to free up space
+const Task = require('./schema/Task')
+const Notes = require('./schema/Notes')
+const SubmitCounter = require('./schema/SubmitCounter')
 
 app.get('/api/HWOrganizer', async (req, res) => {
   try {
@@ -48,11 +29,11 @@ app.get('/api/HWOrganizer', async (req, res) => {
 app.post('/api/HWOrganizer', async (req, res) => {
   try {
     const [subject, task, date] = req.body
-    const newTask = Task({
+    const newTask = new Task({
       'subject': subject,
       'task': task,
       'due': date,
-      'added': Date(),
+      'added': new Date(),
     })
     const savedTask = await newTask.save()
     res.status(201).json(savedTask)
