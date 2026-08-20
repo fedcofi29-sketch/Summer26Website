@@ -33,7 +33,7 @@ function TaskRow({task, onSubmit}) {
     <td>{task.task}</td>
     <td>{convertToDate(dueDate.getMonth(), dueDate.getDate())}</td>
     <td> 
-      <input type="checkbox" className="checkbox" value={checked} onChange={(e)=>setChecked(e.target.checked)}></input>
+      <input type="checkbox" className="checkbox" checked={checked} onChange={(e)=>setChecked(e.target.checked)}></input>
       </td>
       <td><button className='submit-button' onClick={()=>onSubmit(task._id)}>
         {/* The button filters out the task that matches its id */}Submitted</button></td>
@@ -64,10 +64,13 @@ function App() {
         const response = await fetch('http://localhost:5050/api/HWOrganizer') // Sends request to server for data
         const data = await response.json() // Converts data into js
         
-        data.sort((a, b) => new Date(a.due) - new Date(b.due)) 
-        // Compares each task's date to each other and sorts the earliest first
-        
-        setTasks(data)
+        if (Array.isArray(data)) {
+          data.sort((a, b) => new Date(a.due) - new Date(b.due)) 
+          // Compares each task's date to each other and sorts the earliest firstxs       
+          setTasks(data)
+        } else {
+          console.error('Expected array, received:', data)
+        }
       } catch (error) {
         console.error('Error fetching data from server:', error)
       }
