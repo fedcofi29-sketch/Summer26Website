@@ -93,13 +93,6 @@ button {
   color:#ae3030;
 }
 
-.total-footer { /* also not sure about these colors */
-  color: #000000;
-  background-color: #ffffff; 
-  padding: 5px;
-  margin: auto /* centers on page */
-}
-
 .vertical-lines {
   border-collapse: collapse; /* stops overlapping lines */
   margin: 0 auto; /* centers overall table on screen */

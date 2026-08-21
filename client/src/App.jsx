@@ -115,29 +115,13 @@ function App() {
     })
     if (response.ok) {
       setTasks(tasks.filter(task => task._id !== id))
-      updateSubmitCount()
     }} catch (error) {
       console.error('Error deleting task:', error)
     }
   }
 
-  async function updateSubmitCount() {
-    try {
-      const response = await fetch('http://localhost:5050/api/submitcount', { // Sends to server
-          method: 'POST', // Runs app.post in index.js w/ this data
-          headers: {
-            'Content-Type': 'application/json' // Tells it what type of data to receive
-          },
-          body: JSON.stringify({'count': totalSubmitted + 1}) // Formats data to send
-        })
-      setTotalSubmitted(totalSubmitted + 1) // No need to fetch the data again
-    } catch (error) {
-      console.error('Error updating count:', error)
-    }
-  }
-
   return (
-    <div className="overall-page"> {/* encompasses everything to account for footer */}
+    <div className="overall-page"> {/* encompasses everything to account for footer: leaving it despite removing the footer in case I change my mind */}
       <div style={{flex: '1'}}> {/* this div is everything but the footer */}
       <h1 className='hw-heading'>Homework</h1>
         <div className='input-div'>
@@ -170,7 +154,6 @@ function App() {
         </tbody>
         </table>
         </div>
-        <footer className="total-footer">Total Times Submitted: {totalSubmitted}</footer> 
     </div>
   )
 }

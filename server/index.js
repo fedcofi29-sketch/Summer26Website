@@ -51,25 +51,6 @@ app.post('/api/tasks', async (req, res) => { // changed route to allow different
   }
 })
 
-app.post('/api/submitcount', async (req, res) => {
-  try {
-    const {count} = req.body
-    let counter = await SubmitCounter.findOne()
-
-    if (!counter) {
-      counter = new SubmitCounter({ count })
-    } else {
-      counter.count = count
-    }
-
-    const savedCount = await counter.save()
-    res.status(200).json(savedCount)
-  } catch (error) {
-    console.error('database error:', error)
-    res.status(400).json({ message: 'Failed to update count', error: error.message })
-  }
-})
-
 app.delete('/api/HWOrganizer/:id', async (req, res) => {
   try {
     const {id} = req.params
