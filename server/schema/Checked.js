@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const checkedSchema = new mongoose.Schema({
-  count: {
+  checked: {
     type: Boolean,
     required: true
   }

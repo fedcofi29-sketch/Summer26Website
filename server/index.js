@@ -14,7 +14,6 @@ app.use(express.json())
 // Moved schema to another file to free up space
 const Task = require('./schema/Task')
 const Notes = require('./schema/Notes')
-const SubmitCounter = require('./schema/SubmitCounter')
 const Checked = require('./schema/Checked')
 
 app.get('/api/HWOrganizer', async (req, res) => {
@@ -48,6 +47,23 @@ app.post('/api/tasks', async (req, res) => { // changed route to allow different
   } catch (error) {
     console.error('database error:', error)
     res.status(400).json({message: 'Failed to create task:', error:  error.message})
+  }
+})
+
+app.post('/api/checks/:id', async (req, res) => {
+  try {
+    const {id} = req.params // passing id to identify if it's a new checkbox or existing one
+    const isChecked = req.body.isChecked
+    const box = Checked.findById(id) // = null if doesn't exist
+
+    if (!box) {
+      const newBox = new Checked({
+        'checked': isChecked
+      })
+    }
+
+  } catch (error) {
+
   }
 })
 

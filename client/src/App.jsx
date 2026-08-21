@@ -22,18 +22,24 @@ function convertToDate(month, day) { // There's probably a way to shortcut this 
 }
 
 
-function TaskRow({task, onSubmit}) {
+function TaskRow({task, onSubmit, postCheckbox}) {
   const [notes, setNotes] = useState('')
-  const [checked, setChecked] = useState(false)
+  const [checked, setChecked] = useState(task.checked || false)
   
   const dueDate = new Date(task.due) // json server data passes through as string
+
+  const handleCheckChange = (e) => {
+    const isChecked = e.target.checked
+    postCheckbox(task._id, isChecked)
+    setChecked(isChecked)
+  }
 
   return (
   <tr style={{backgroundColor:subjectColors[task.subject], color: 'black'}} >
     <td>{task.task}</td>
     <td>{convertToDate(dueDate.getMonth(), dueDate.getDate())}</td>
     <td> 
-      <input type="checkbox" className="checkbox" checked={checked} onChange={(e)=>setChecked(e.target.checked)}></input>
+      <input type="checkbox" className="checkbox" checked={checked} onChange={handleCheckChange}></input>
       </td>
       <td><button className='submit-button' onClick={()=>onSubmit(task._id)}>
         {/* The button filters out the task that matches its id */}Submitted</button></td>
@@ -120,6 +126,25 @@ function App() {
     }
   }
 
+  async function postCheckbox(id, status) { // Same as other post on this end
+    try {
+      const response = await fetch(`http://localhost:5050/api/checks/${id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({isChecked: status})
+      })
+      if (!response.ok) {
+          const errorData = await response.json()
+          console.error('Server error:', errorData)
+          return
+        }
+    } catch (error) {
+      console.error('Error sending data:', error)
+    }
+  }
+
   return (
     <div className="overall-page"> {/* encompasses everything to account for footer: leaving it despite removing the footer in case I change my mind */}
       <div style={{flex: '1'}}> {/* this div is everything but the footer */}
@@ -149,6 +174,7 @@ function App() {
              key={task._id}
              task={task}
              onSubmit={handleSubmit}
+             postCheckbox={postCheckbox}
              />
           ))}
         </tbody>
