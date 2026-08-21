@@ -66,7 +66,7 @@ function App() {
         
         if (Array.isArray(data)) {
           data.sort((a, b) => new Date(a.due) - new Date(b.due)) 
-          // Compares each task's date to each other and sorts the earliest firstxs       
+          // Compares each task's date to each other and sorts the earliest first       
           setTasks(data)
         } else {
           console.error('Expected array, received:', data)

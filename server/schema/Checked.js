@@ -1,11 +1,10 @@
 const mongoose = require('mongoose')
-const { boolean } = require('yargs')
 
 const checkedSchema = new mongoose.Schema({
   count: {
-    type: boolean,
+    type: Boolean,
     required: true
   }
 })
 
-module.exports = mongoose.model('Checkbox', checkedSchema) // Allows import into index
+module.exports = mongoose.model('Checked', checkedSchema) // Allows import into index

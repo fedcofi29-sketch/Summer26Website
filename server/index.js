@@ -15,7 +15,7 @@ app.use(express.json())
 const Task = require('./schema/Task')
 const Notes = require('./schema/Notes')
 const SubmitCounter = require('./schema/SubmitCounter')
-const Checkbox = require('./schema/Checkbox')
+const Checked = require('./schema/Checked')
 
 app.get('/api/HWOrganizer', async (req, res) => {
   try {
