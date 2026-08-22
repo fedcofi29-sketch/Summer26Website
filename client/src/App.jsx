@@ -28,6 +28,10 @@ function TaskRow({task, onSubmit, postCheckbox}) {
   
   const dueDate = new Date(task.due) // json server data passes through as string
 
+  useEffect(() => { // runs whenever task.checked is updated
+    setChecked(task.checked || false)
+  }, [task.checked])
+
   const handleCheckChange = (e) => {
     const isChecked = e.target.checked
     postCheckbox(task._id, isChecked)
@@ -65,25 +69,35 @@ function App() {
   const [inputDate, setInputDate] = useState('') // Date passed through as "YYYY-MM-DD" string
   const [totalSubmitted, setTotalSubmitted] = useState(0)
   
-  async function fetchTasks() { // This is the same as it was in the bookList
+
+  async function fetchData() {
     try {
-        const response = await fetch('http://localhost:5050/api/HWOrganizer') // Sends request to server for data
-        const data = await response.json() // Converts data into js
-        
-        if (Array.isArray(data)) {
-          data.sort((a, b) => new Date(a.due) - new Date(b.due)) 
-          // Compares each task's date to each other and sorts the earliest first       
-          setTasks(data)
-        } else {
-          console.error('Expected array, received:', data)
-        }
-      } catch (error) {
-        console.error('Error fetching data from server:', error)
-      }
+      const [tasksRes, checksRes] = await Promise.all([ // Allows multiple fetch at once
+        fetch('http://localhost:5050/api/tasks'),
+        fetch('http://localhost:5050/api/checks')
+      ])
+
+      const taskData = await tasksRes.json() // Converts data into js
+      const checkData = await checksRes.json()
+      console.log(checkData)
+      
+      const checkMap = new Map( // creates psuedo object with faster search time. key => value
+        checkData.map(c=>[c._id, c.checked]) 
+      )
+
+      const mergedTasks = taskData.map(task=>({
+        ...task,
+        checked: checkMap.get(task._id) || false
+      }))
+
+      setTasks(mergedTasks)
+    } catch (error) {
+      console.error('Error fetching data from server:', error)
+    }
   }
 
   useEffect(() => {
-    fetchTasks()
+    fetchData()
   }, []) // [] prevents this from running each time the page rerenders
 
   const handleDateChange = (e) => {
@@ -107,12 +121,11 @@ function App() {
         }
         /* I'm not reseting the inputs because I think it will make more sense if they stay
           Don't really have a reason beyond it seeming more natural */
-        fetchTasks()
+        fetchData()
       } catch (error) {
         console.error('Error sending data:', error)
       }
   }
-  
   
   async function handleSubmit(id) { // This is the same as in bookList
     try {
@@ -140,6 +153,7 @@ function App() {
           console.error('Server error:', errorData)
           return
         }
+      console.log('posted checkbox')
     } catch (error) {
       console.error('Error sending data:', error)
     }

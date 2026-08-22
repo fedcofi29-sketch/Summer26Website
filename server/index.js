@@ -19,7 +19,7 @@ const Task = require('./schema/Task')
 const Notes = require('./schema/Notes')
 const Checked = require('./schema/Checked')
 
-app.get('/api/HWOrganizer', async (req, res) => {
+app.get('/api/tasks', async (req, res) => {
   try {
     const tasks = await Task.find() // Only picks up data that matche the schema|=> I can use more finds if I have more than one schema
     res.status(200).json(tasks)
@@ -49,24 +49,34 @@ app.post('/api/tasks', async (req, res) => { // changed route to allow different
     res.status(201).json(savedTask)
   } catch (error) {
     console.error('database error:', error)
-    res.status(400).json({message: 'Failed to create task:', error:  error.message})
+    res.status(400).json('Failed to create task')
+  }
+})
+
+app.get('/api/checks', async (req, res) => { // Same as other get. Not sure if there's more ways to make it
+  try {
+    const checks = await Checked.find()
+    res.status(200).json(checks)
+  } catch (error) {
+    console.error('database error:', error)
+    res.status(500).json('Failed to get checks')
   }
 })
 
 app.post('/api/checks/:id', async (req, res) => {
   try {
     const {id} = req.params // passing id to identify if it's a new checkbox or existing one
-    const isChecked = req.body.isChecked
-    const box = Checked.findById(id) // = null if doesn't exist
-
-    if (!box) {
-      const newBox = new Checked({
-        'checked': isChecked
-      })
-    }
-
+    const {isChecked} = req.body
+    
+    const updatedCheck = await Checked.findByIdAndUpdate(
+      id,
+      {checked: isChecked},
+      {returnDocument: 'after', upsert: true} // Creates a new Check if one doesn't exist with this id
+    )
+    res.status(201).json(updatedCheck)
   } catch (error) {
-
+    console.error('database error:', error)
+    res.status(400).json('Failed to update check')
   }
 })
 
@@ -78,11 +88,16 @@ app.delete('/api/HWOrganizer/:id', async (req, res) => {
     if (!deletedTask) { // Sends error message if failed
       return res.status(404).json({message: 'Task not found'})
     } 
+
+    const deletedCheck = await Checked.findByIdAndDelete(id)
+    if (!deletedCheck) { // Sends error message if failed
+      return res.status(404).json({message: 'Checkbox not found'})
+    } 
     
-    res.status(200).json({message: 'Task deleted'})
+    res.status(200).json({message: 'Both deleted'})
   } catch (error) {
-    console.error('Error deleting task from database:', error) // Catches other errors
-    res.status(500).json({message: 'Failure to delete task'})
+    console.error('Error deleting from database:', error) // Catches other errors
+    res.status(500).json({message: 'Failure to delete something'})
   }
 })
 
