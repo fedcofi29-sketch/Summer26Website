@@ -7,6 +7,7 @@ const cors = require('cors')
 const app = express()
 const PORT = 5050
 
+console.log(process.env.MONGO_URI)
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log('Connected to MongoDB Atlas Cloud'))
 .catch((err) => console.log('Server not connecting:', err))
