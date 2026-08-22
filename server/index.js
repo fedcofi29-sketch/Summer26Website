@@ -1,11 +1,14 @@
+// Using envv to protect password
+require('dotenv').config()
+
 const express = require('express')
 const mongoose = require('mongoose')
 const cors = require('cors')
 const app = express()
 const PORT = 5050
 
-mongoose.connect('mongodb://127.0.0.1:27017/HWOrganizer')
-.then(() => console.log('Connected to MongoDB'))
+mongoose.connect(process.env.MONGO_URI)
+.then(() => console.log('Connected to MongoDB Atlas Cloud'))
 .catch((err) => console.log('Server not connecting:', err))
 
 app.use(cors())
