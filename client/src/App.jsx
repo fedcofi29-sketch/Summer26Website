@@ -12,9 +12,10 @@ const subjectColors = { // Kind of arbitrary, but this is how I set my tabgroups
   'Mech Eng': '#d17224',
   'History': '#c7cc2f',
   'Modern': '#3f62d4',
-  'English': '#a4a8c0'
+  'English': '#a4a8c0',
+  'Other': '#30aa86'
 }
-const subjects = ["SEL", "Math", "Spanish", "Biology", "Mech Eng", "History", "Modern", "English"]
+const subjects = ["SEL", "Math", "Spanish", "Biology", "Mech Eng", "History", "Modern", "English", "Other"]
 
 function convertToDate(month, day) { // There's probably a way to shortcut this but it's fine for now
   const monthName = Months[month] // Date.getMonth already acounts for index
@@ -108,6 +109,8 @@ function App() {
         notes: notesMap.get(task._id) || ''
       }))
 
+      mergedTasks.sort((a, b) => new Date(a) - new Date(b))
+
       setTasks(mergedTasks)
     } catch (error) {
       console.error('Error fetching data from server:', error)
@@ -171,7 +174,6 @@ function App() {
           console.error('Server error:', errorData)
           return
         }
-      console.log('posted checkbox')
     } catch (error) {
       console.error('Error sending data:', error)
     }
@@ -191,7 +193,6 @@ function App() {
           console.error('Server error:', errorData)
           return
         }
-      console.log('posted notes')
     } catch (error) {
       console.error('Error sending data:', error)
     }
