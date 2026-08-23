@@ -81,6 +81,33 @@ app.post('/api/checks/:id', async (req, res) => {
   }
 })
 
+app.get('/api/notes', async (req, res) => { // Same as other get. Not sure if there's more ways to make it
+  try {
+    const notes = await Notes.find()
+    res.status(200).json(notes)
+  } catch (error) {
+    console.error('database error:', error)
+    res.status(500).json('Failed to get notes')
+  }
+})
+
+app.post('/api/notes/:id', async (req, res) => { // Same idea as check post
+  try {
+    const {id} = req.params
+    const {notes} = req.body
+    
+    const updatedNote = await Notes.findByIdAndUpdate(
+      id,
+      {note: notes},
+      {returnDocument: 'after', upsert: true}
+    )
+    res.status(201).json(updatedNote)
+  } catch (error) {
+    console.error('database error:', error)
+    res.status(400).json('Failed to update note')
+  }
+})
+
 app.delete('/api/HWOrganizer/:id', async (req, res) => {
   try {
     const {id} = req.params
@@ -95,6 +122,11 @@ app.delete('/api/HWOrganizer/:id', async (req, res) => {
       return res.status(404).json({message: 'Checkbox not found'})
     } 
     
+    const deletedNote = await Notes.findByIdAndDelete(id)
+    if (!deletedNote) { // Sends error message if failed
+      return res.status(404).json({message: 'Note not found'})
+    } 
+
     res.status(200).json({message: 'Both deleted'})
   } catch (error) {
     console.error('Error deleting from database:', error) // Catches other errors

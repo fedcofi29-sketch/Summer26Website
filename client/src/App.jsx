@@ -22,8 +22,8 @@ function convertToDate(month, day) { // There's probably a way to shortcut this 
 }
 
 
-function TaskRow({task, onSubmit, postCheckbox}) {
-  const [notes, setNotes] = useState('')
+function TaskRow({task, onSubmit, postCheckbox, postNotes}) {
+  const [notes, setNotes] = useState(task.notes || '')
   const [checked, setChecked] = useState(task.checked || false)
   
   const dueDate = new Date(task.due) // json server data passes through as string
@@ -32,10 +32,20 @@ function TaskRow({task, onSubmit, postCheckbox}) {
     setChecked(task.checked || false)
   }, [task.checked])
 
+  useEffect(() => { // runs whenever task.notes is updated
+    setNotes(task.notes || '')
+  }, [task.notes])
+
   const handleCheckChange = (e) => {
     const isChecked = e.target.checked
     postCheckbox(task._id, isChecked)
-    setChecked(isChecked)
+    setChecked(isChecked) // might be redundant amount of sets but better safe
+  }
+
+  const handleNotesChange = (e) => {
+    const notes = e.target.value
+    postNotes(task._id, notes)
+    setNotes(notes)
   }
 
   return (
@@ -51,7 +61,7 @@ function TaskRow({task, onSubmit, postCheckbox}) {
         <div className="notes-box"> 
           {/* putting these in a div lets them be aligned with flexbox */}
           <input type='text' placeholder='Assignment Notes...' 
-          value={notes} onChange={(e)=>setNotes(e.target.value)}></input>
+          value={notes} onChange={handleNotesChange}></input>
           <button className='save-notes'>
             <img src={saveButton} alt='Save notes'></img>
           </button>
@@ -67,27 +77,35 @@ function App() {
   const [inputSubject, setInputSubject] = useState()
   const [inputAssignment, setInputAssignment] = useState('')
   const [inputDate, setInputDate] = useState('') // Date passed through as "YYYY-MM-DD" string
-  const [totalSubmitted, setTotalSubmitted] = useState(0)
   
 
   async function fetchData() {
     try {
-      const [tasksRes, checksRes] = await Promise.all([ // Allows multiple fetch at once
+      const [tasksRes, checksRes, notesRes] = await Promise.all([ // Allows multiple fetch at once
         fetch('http://localhost:5050/api/tasks'),
-        fetch('http://localhost:5050/api/checks')
+        fetch('http://localhost:5050/api/checks'),
+        fetch('http://localhost:5050/api/notes')
       ])
 
       const taskData = await tasksRes.json() // Converts data into js
       const checkData = await checksRes.json()
-      console.log(checkData)
+      const notesData = await notesRes.json()
       
       const checkMap = new Map( // creates psuedo object with faster search time. key => value
         checkData.map(c=>[c._id, c.checked]) 
       )
+      const notesMap = new Map(
+        notesData.map(n=>[n._id, n.note]) 
+      )
 
-      const mergedTasks = taskData.map(task=>({
+      // proabably a way to condense both these merges
+      const InitialTaskMerge = taskData.map(task=>({
         ...task,
         checked: checkMap.get(task._id) || false
+      }))
+      const mergedTasks = InitialTaskMerge.map(task=>({
+        ...task,
+        notes: notesMap.get(task._id) || ''
       }))
 
       setTasks(mergedTasks)
@@ -159,6 +177,26 @@ function App() {
     }
   }
 
+  async function postNotes(id, notes) { // Same as other post on this end
+    try {
+      const response = await fetch(`http://localhost:5050/api/notes/${id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({notes})
+      })
+      if (!response.ok) {
+          const errorData = await response.json()
+          console.error('Server error:', errorData)
+          return
+        }
+      console.log('posted notes')
+    } catch (error) {
+      console.error('Error sending data:', error)
+    }
+  }
+
   return (
     <div className="overall-page"> {/* encompasses everything to account for footer: leaving it despite removing the footer in case I change my mind */}
       <div style={{flex: '1'}}> {/* this div is everything but the footer */}
@@ -189,6 +227,7 @@ function App() {
              task={task}
              onSubmit={handleSubmit}
              postCheckbox={postCheckbox}
+             postNotes={postNotes}
              />
           ))}
         </tbody>
