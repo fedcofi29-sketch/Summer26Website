@@ -8,7 +8,7 @@ const subjectColors = { // Kind of arbitrary, but this is how I set my tabgroups
   "SEL": '#921892',
   "Math": '#c81a1ac9',
   'Spanish': '#b3277b',
-  'Biology': '#206b1e',
+  'Biology': '#58b554',
   'Mech Eng': '#d17224',
   'History': '#c7cc2f',
   'Modern': '#3f62d4',
@@ -109,7 +109,7 @@ function App() {
         notes: notesMap.get(task._id) || ''
       }))
 
-      mergedTasks.sort((a, b) => new Date(a) - new Date(b))
+      mergedTasks.sort((a, b) => new Date(a.due) - new Date(b.due))
 
       setTasks(mergedTasks)
     } catch (error) {
