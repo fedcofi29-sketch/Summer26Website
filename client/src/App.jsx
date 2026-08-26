@@ -1,7 +1,8 @@
 import  './App.css'
 import {useState, useEffect} from 'react'
 import downArrow from './assets/DownArrow.png'
-import saveButton from './assets/SaveButton.png'
+import onBulb from './assets/LightbulbOn.png'
+import offBulb from './assets/LightbulbOff.png'
 
 const Months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 const subjectColors = { // Kind of arbitrary, but this is how I set my tabgroups
@@ -23,19 +24,12 @@ function convertToDate(month, day) { // There's probably a way to shortcut this 
 }
 
 
-function TaskRow({task, onSubmit, postCheckbox, postNotes}) {
+function TaskRow({task, onSubmit, postCheckbox, postNotes, postBulbs}) {
   const [notes, setNotes] = useState(task.notes || '')
   const [checked, setChecked] = useState(task.checked || false)
+  const [isOn, setIsOn] = useState(task.lit || false)
   
   const dueDate = new Date(task.due) // json server data passes through as string
-
-  useEffect(() => { // runs whenever task.checked is updated
-    setChecked(task.checked || false)
-  }, [task.checked])
-
-  useEffect(() => { // runs whenever task.notes is updated
-    setNotes(task.notes || '')
-  }, [task.notes])
 
   const handleCheckChange = (e) => {
     const isChecked = e.target.checked
@@ -49,8 +43,14 @@ function TaskRow({task, onSubmit, postCheckbox, postNotes}) {
     setNotes(notes)
   }
 
+  function handleBulbChange() {
+    const newStatus = !isOn
+    setIsOn(newStatus)
+    postBulbs(task._id, newStatus)
+  }
+
   return (
-  <tr style={{backgroundColor:subjectColors[task.subject], color: 'black'}} >
+  <tr style={{backgroundColor:subjectColors[task.subject], color: task.lit ? 'yellow' : 'black'}} >
     <td>{task.task}</td>
     <td>{convertToDate(dueDate.getMonth(), dueDate.getDate())}</td>
     <td> 
@@ -63,8 +63,8 @@ function TaskRow({task, onSubmit, postCheckbox, postNotes}) {
           {/* putting these in a div lets them be aligned with flexbox */}
           <input type='text' placeholder='Assignment Notes...' 
           value={notes} onChange={handleNotesChange}></input>
-          <button className='save-notes'>
-            <img src={saveButton} alt='Save notes'></img>
+          <button className='lightbulb' onClick={(e)=>handleBulbChange()} style={{backgroundColor: isOn ? 'yellow' : 'white'}}>
+            <img src={isOn ? onBulb : offBulb} alt='Highlight'></img>
           </button>
         </div>
       </td>
@@ -82,15 +82,17 @@ function App() {
 
   async function fetchData() {
     try {
-      const [tasksRes, checksRes, notesRes] = await Promise.all([ // Allows multiple fetch at once
+      const [tasksRes, checksRes, notesRes, bulbsRes] = await Promise.all([ // Allows multiple fetch at once
         fetch('http://localhost:5050/api/tasks'),
         fetch('http://localhost:5050/api/checks'),
-        fetch('http://localhost:5050/api/notes')
+        fetch('http://localhost:5050/api/notes'),
+        fetch('http://localhost:5050/api/bulbs')
       ])
 
       const taskData = await tasksRes.json() // Converts data into js
       const checkData = await checksRes.json()
       const notesData = await notesRes.json()
+      const bulbsData = await bulbsRes.json()
       
       const checkMap = new Map( // creates psuedo object with faster search time. key => value
         checkData.map(c=>[c._id, c.checked]) 
@@ -99,14 +101,22 @@ function App() {
         notesData.map(n=>[n._id, n.note]) 
       )
 
-      // proabably a way to condense both these merges
+      const bulbsMap = new Map(
+        bulbsData.map(m=>[m._id, m.on])
+      )
+
+      // proabably a way to condense these merges
       const InitialTaskMerge = taskData.map(task=>({
         ...task,
         checked: checkMap.get(task._id) || false
       }))
-      const mergedTasks = InitialTaskMerge.map(task=>({
+      const SecondTaskMerge = InitialTaskMerge.map(task=>({
         ...task,
         notes: notesMap.get(task._id) || ''
+      }))
+      const mergedTasks = SecondTaskMerge.map(task=>({
+        ...task,
+        lit: bulbsMap.get(task._id) || false
       }))
 
       mergedTasks.sort((a, b) => new Date(a.due) - new Date(b.due))
@@ -198,6 +208,25 @@ function App() {
     }
   }
 
+  async function postBulbs(id, status) { // getting kind of routine
+    try {
+      const response = await fetch(`http://localhost:5050/api/bulbs/${id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({isOn: status})
+      })
+      if (!response.ok) {
+          const errorData = await response.json()
+          console.error('Server error:', errorData)
+          return
+        }
+    } catch (error) {
+      console.error('Error sending data:', error)
+    }
+  }
+
   return (
     <div className="overall-page"> {/* encompasses everything to account for footer: leaving it despite removing the footer in case I change my mind */}
       <div style={{flex: '1'}}> {/* this div is everything but the footer */}
@@ -229,6 +258,7 @@ function App() {
              onSubmit={handleSubmit}
              postCheckbox={postCheckbox}
              postNotes={postNotes}
+             postBulbs={postBulbs}
              />
           ))}
         </tbody>

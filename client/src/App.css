@@ -37,6 +37,23 @@ button {
   color:#170e30
 }
 
+.lightbulb {
+  display: inline-flex;
+  padding: 0;
+  outline: none;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+}
+
+.lightbulb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  object-fit: contain
+}
+
 .new-assignment-input-dimen {
   width: 110px;
   padding: 5px;
@@ -66,23 +83,6 @@ button {
   display: flex;
   flex-direction: column;
   min-height: 100vh 
-}
-
-.save-notes {
-  display: inline-flex;
-  padding: 0;
-  outline: none;
-  cursor: pointer;
-  width: 20px;
-  height: 20px;
-}
-
-.save-notes img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  background-color: transparent;
-  object-fit: contain
 }
 
 .submit-button {

@@ -1,4 +1,4 @@
-// Using envv to protect password
+// Using env to protect password
 require('dotenv').config()
 
 const express = require('express')
@@ -19,6 +19,7 @@ app.use(express.json())
 const Task = require('./schema/Task')
 const Notes = require('./schema/Notes')
 const Checked = require('./schema/Checked')
+const Bulb = require('./schema/Bulb')
 
 app.get('/api/tasks', async (req, res) => {
   try {
@@ -105,6 +106,36 @@ app.post('/api/notes/:id', async (req, res) => { // Same idea as check post
   } catch (error) {
     console.error('database error:', error)
     res.status(400).json('Failed to update note')
+  }
+})
+
+/* At this point I'm just copying and changing the names
+    Not sure if I'm just lazy or these are all kind of similar
+      Probably also still beginner level stuff */
+app.get('/api/bulbs', async (req, res) => {
+  try {
+    const bulb = await Bulb.find()
+    res.status(200).json(bulb)
+  } catch (error) {
+    console.error('database error:', error)
+    res.status(500).json('Failed to get bulbs')
+  }
+})
+
+app.post('/api/bulbs/:id', async (req, res) => {
+  try {
+    const {id} = req.params
+    const {isOn} = req.body
+    
+    const updatedBulb = await Bulb.findByIdAndUpdate(
+      id,
+      {on: isOn},
+      {returnDocument: 'after', upsert: true}
+    )
+    res.status(201).json(updatedBulb)
+  } catch (error) {
+    console.error('database error:', error)
+    res.status(400).json('Failed to update bulb')
   }
 })
 
