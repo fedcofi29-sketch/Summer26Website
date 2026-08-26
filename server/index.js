@@ -117,15 +117,9 @@ app.delete('/api/HWOrganizer/:id', async (req, res) => {
       return res.status(404).json({message: 'Task not found'})
     } 
 
-    const deletedCheck = await Checked.findByIdAndDelete(id)
-    if (!deletedCheck) { // Sends error message if failed
-      return res.status(404).json({message: 'Checkbox not found'})
-    } 
-    
-    const deletedNote = await Notes.findByIdAndDelete(id)
-    if (!deletedNote) { // Sends error message if failed
-      return res.status(404).json({message: 'Note not found'})
-    } 
+    /* Notes and checks deleted with task
+        I thought it was seperate but including find and delete for those as well returned 404 
+          This method works */
 
     res.status(200).json({message: 'Both deleted'})
   } catch (error) {
