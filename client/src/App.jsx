@@ -47,6 +47,7 @@ function TaskRow({task, onSubmit, postCheckbox, postNotes, postBulbs}) {
     const newStatus = !isOn
     setIsOn(newStatus)
     postBulbs(task._id, newStatus)
+    task.lit = newStatus
   }
 
   return (
