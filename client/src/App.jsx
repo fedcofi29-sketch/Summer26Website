@@ -6,17 +6,17 @@ import offBulb from './assets/LightbulbOff.png'
 
 const Months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 const subjectColors = { // Kind of arbitrary, but this is how I set my tabgroups
+  'Mech Eng': '#d17224',
+  'History': '#c7cc2f',
+  'English': '#a4a8c0',
+  'Modern': '#3f62d4',
   "SEL": '#921892',
   "Math": '#c81a1ac9',
   'Spanish': '#b3277b',
   'Biology': '#58b554',
-  'Mech Eng': '#d17224',
-  'History': '#c7cc2f',
-  'Modern': '#3f62d4',
-  'English': '#a4a8c0',
   'Other': '#30aa86'
 }
-const subjects = ["SEL", "Math", "Spanish", "Biology", "Mech Eng", "History", "Modern", "English", "Other"]
+const subjects = ["Mech Eng", "History", "English", "Modern", "SEL", "Math", "Spanish", "Biology", "Other"]
 
 function convertToDate(month, day) { // There's probably a way to shortcut this but it's fine for now
   const monthName = Months[month] // Date.getMonth already acounts for index
